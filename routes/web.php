@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Route;
 // Public landing page
 Route::get('/', fn () => view('welcome'))->name('home');
 
+Route::get('/debug-db', function() {
+    return [
+        'env_db_connection' => env('DB_CONNECTION'),
+        'env_database_url' => env('DATABASE_URL'),
+        'env_db_url' => env('DB_URL'),
+        'env_db_database' => env('DB_DATABASE'),
+        'config_pgsql' => config('database.connections.pgsql'),
+    ];
+});
+
 // 2FA Verification Routes
 Route::get('/login/two-factor', [EmailTwoFactorController::class, 'show'])->name('login.two-factor');
 Route::post('/login/two-factor', [EmailTwoFactorController::class, 'verify'])->name('login.two-factor.verify');
