@@ -20,6 +20,8 @@ Route::get('/debug-db', function() {
         'env_database_url' => env('DATABASE_URL'),
         'env_db_url' => env('DB_URL'),
         'env_db_database' => env('DB_DATABASE'),
+        'env_google_client_id' => env('GOOGLE_CLIENT_ID') ? substr(env('GOOGLE_CLIENT_ID'), 0, 15) . '...' : null,
+        'config_google_client_id' => config('services.google.client_id') ? substr(config('services.google.client_id'), 0, 15) . '...' : null,
         'config_pgsql' => config('database.connections.pgsql'),
     ];
 });
