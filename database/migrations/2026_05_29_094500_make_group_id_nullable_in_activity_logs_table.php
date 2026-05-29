@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
 return new class extends Migration
 {
@@ -11,7 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         // Make group_id nullable to support system-wide administrative action logs
-        DB::statement('ALTER TABLE activity_logs MODIFY group_id BIGINT UNSIGNED NULL;');
+        Schema::table('activity_logs', function (Blueprint $table) {
+            $table->unsignedBigInteger('group_id')->nullable()->change();
+        });
     }
 
     /**
@@ -19,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE activity_logs MODIFY group_id BIGINT UNSIGNED NOT NULL;');
+        Schema::table('activity_logs', function (Blueprint $table) {
+            $table->unsignedBigInteger('group_id')->nullable(false)->change();
+        });
     }
 };
