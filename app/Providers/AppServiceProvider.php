@@ -16,6 +16,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Enforce HTTPS in production or when running on DigitalOcean domain
+        if ($this->app->environment('production') || str_contains(request()->getHost(), 'ondigitalocean.app')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         // Register event → listener mapping
         // When ExpenseCreated is fired anywhere in the app,
         // Laravel automatically calls LogExpenseActivity::handle()
