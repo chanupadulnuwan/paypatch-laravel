@@ -68,4 +68,29 @@ class ProfileController extends Controller
 
         return redirect()->back()->with('success', 'Profile updated successfully!')->with('modal', 'profile');
     }
+
+    /**
+     * Upgrade or downgrade the user's subscription plan dynamically.
+     */
+    public function upgradePlan(Request $request)
+    {
+        $request->validate([
+            'plan_name' => 'required|string|in:Free Tier,Premium,Premium Plus',
+        ]);
+
+        $user = Auth::user();
+        $accountType = 'free';
+        if ($request->plan_name === 'Premium' || $request->plan_name === 'Premium Plus') {
+            $accountType = 'premium';
+        }
+
+        $user->update([
+            'account_type' => $accountType,
+        ]);
+
+        // Clear dashboard cache to apply upgraded limits/features if any
+        \Illuminate\Support\Facades\Cache::forget("dashboard_groups_{$user->id}");
+
+        return redirect()->back()->with('success', 'Subscription plan updated to ' . $request->plan_name . ' successfully!')->with('modal', 'profile');
+    }
 }

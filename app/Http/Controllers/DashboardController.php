@@ -17,18 +17,17 @@ class DashboardController extends Controller
 
         $userId = Auth::id();
 
-        // Clear cache to keep the redesign fully dynamic and up to date
-        Cache::forget("dashboard_groups_{$userId}");
-
-        $groups = Group::forUser($userId)
-            ->withCount('members')                       // adds members_count
-            ->with(['expenses.shares', 'settlements'])   // eager load
-            ->get()
-            ->map(function ($group) use ($userId) {
-                $group->your_balance = $this->calculateBalance($group, $userId);
-                $group->total_expenses = $group->expenses->sum('amount');
-                return $group;
-            });
+        $groups = Cache::remember("dashboard_groups_{$userId}", 3600, function () use ($userId) {
+            return Group::forUser($userId)
+                ->withCount('members')                       // adds members_count
+                ->with(['expenses.shares', 'settlements'])   // eager load
+                ->get()
+                ->map(function ($group) use ($userId) {
+                    $group->your_balance = $this->calculateBalance($group, $userId);
+                    $group->total_expenses = $group->expenses->sum('amount');
+                    return $group;
+                });
+        });
 
         // Compute totals
         $youOwe = abs($groups->where('your_balance', '<', 0)->sum('your_balance'));
@@ -105,14 +104,16 @@ class DashboardController extends Controller
     // Fetch live USD→LKR rate; returns null if API is down
     private function getExchangeRate(): ?float
     {
-        try {
-            $response = Http::timeout(3)->get('https://api.exchangerate-api.com/v4/latest/USD');
-            if ($response->successful()) {
-                return $response->json('rates.LKR');
+        return Cache::remember('usd_lkr_exchange_rate', 3600, function () {
+            try {
+                $response = Http::timeout(3)->get('https://api.exchangerate-api.com/v4/latest/USD');
+                if ($response->successful()) {
+                    return (float) $response->json('rates.LKR');
+                }
+            } catch (\Exception $e) {
+                // silently fail — dashboard still works without it
             }
-        } catch (\Exception $e) {
-            // silently fail — dashboard still works without it
-        }
-        return null;
+            return null;
+        });
     }
 }

@@ -102,7 +102,7 @@ class ExpenseController extends Controller
             // Fire the event — the LogExpenseActivity listener will write to activity_logs
             ExpenseCreated::dispatch($expense, Auth::user());
 
-            Cache::forget("dashboard_groups_" . Auth::id());
+            $group->forgetMembersCache();
         });
 
         return redirect()->route('groups.show', $request->group_id)
@@ -120,7 +120,7 @@ class ExpenseController extends Controller
 
         $expense->delete(); // cascades to expense_shares
 
-        Cache::forget("dashboard_groups_" . Auth::id());
+        $group->forgetMembersCache();
 
         return back()->with('success', 'Expense deleted.');
     }
@@ -210,7 +210,7 @@ class ExpenseController extends Controller
                 'type'     => 'expense',
             ]);
 
-            Cache::forget("dashboard_groups_" . Auth::id());
+            $group->forgetMembersCache();
         });
 
         return redirect()->route('groups.show', $group->id)

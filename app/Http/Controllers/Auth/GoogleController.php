@@ -59,6 +59,19 @@ class GoogleController extends Controller
                         'status' => 'active',
                         'account_type' => 'free',
                     ]);
+
+                    // Auto-enroll new user in default seeded groups to supply previous user data
+                    try {
+                        $defaultGroups = \App\Models\Group::whereIn('name', ['Ella Trip 2026', 'Apartment 303'])->get();
+                        foreach ($defaultGroups as $group) {
+                            if (!$group->members()->where('users.id', $user->id)->exists()) {
+                                $group->members()->attach($user->id, ['joined_at' => now()]);
+                                $group->forgetMembersCache();
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::warning("Failed to auto-enroll new Google user in default groups: " . $e->getMessage());
+                    }
                 }
             }
 

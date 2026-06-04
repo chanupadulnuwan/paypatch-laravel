@@ -166,7 +166,7 @@ class ApiController extends Controller
             }
 
             ExpenseCreated::dispatch($expense, $request->user());
-            Cache::forget('dashboard_groups_' . $request->user()->id);
+            $group->forgetMembersCache();
 
             return $expense;
         });

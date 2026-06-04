@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FriendsController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\InsightsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\EmailTwoFactorController;
 use App\Http\Controllers\Auth\GoogleController;
@@ -41,6 +42,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session')])
         // Dashboard
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+        // Insights
+        Route::get('/insights', [InsightsController::class, 'index'])->name('insights');
+
         // Groups — resource controller gives us index, create, store, show, update, destroy
         Route::resource('groups', GroupController::class);
         // Extra group actions (not part of standard resource)
@@ -60,6 +64,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session')])
 
         // Profile update
         Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+        Route::post('/profile/upgrade-plan', [ProfileController::class, 'upgradePlan'])->name('profile.upgradePlan');
 
         // Admin routes — extra EnsureAdmin middleware blocks non-admins
         Route::middleware('admin')->prefix('admin')->name('admin')->group(function () {

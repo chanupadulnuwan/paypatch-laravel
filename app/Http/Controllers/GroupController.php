@@ -15,26 +15,27 @@ use Illuminate\Support\Facades\DB;
 
 class GroupController extends Controller
 {
-    // index — list all groups the current user belongs to
     public function index()
     {
         $userId = Auth::id();
 
-        $groups = Group::forUser($userId)
-            ->withCount('members')                       // adds members_count
-            ->with(['expenses.shares', 'settlements'])   // eager load
-            ->get()
-            ->map(function ($group) use ($userId) {
-                // Balance = paid - your_share - settlements_sent + settlements_received
-                $paid = $group->expenses->where('paid_by', $userId)->sum('amount');
-                $share = $group->expenses->flatMap->shares->where('user_id', $userId)->sum('share_amount');
-                $sent = $group->settlements->where('from_user_id', $userId)->sum('amount');
-                $received = $group->settlements->where('to_user_id', $userId)->sum('amount');
-                
-                $group->your_balance = round($paid - $share - $sent + $received, 2);
-                $group->total_expenses = $group->expenses->sum('amount');
-                return $group;
-            });
+        $groups = Cache::remember("dashboard_groups_{$userId}", 3600, function () use ($userId) {
+            return Group::forUser($userId)
+                ->withCount('members')                       // adds members_count
+                ->with(['expenses.shares', 'settlements'])   // eager load
+                ->get()
+                ->map(function ($group) use ($userId) {
+                    // Balance = paid - your_share - settlements_sent + settlements_received
+                    $paid = $group->expenses->where('paid_by', $userId)->sum('amount');
+                    $share = $group->expenses->flatMap->shares->where('user_id', $userId)->sum('share_amount');
+                    $sent = $group->settlements->where('from_user_id', $userId)->sum('amount');
+                    $received = $group->settlements->where('to_user_id', $userId)->sum('amount');
+                    
+                    $group->your_balance = round($paid - $share - $sent + $received, 2);
+                    $group->total_expenses = $group->expenses->sum('amount');
+                    return $group;
+                });
+        });
 
         return view('groups.index', compact('groups'));
     }
@@ -150,7 +151,7 @@ class GroupController extends Controller
 
         $group->update($updateData);
 
-        Cache::forget("dashboard_groups_" . Auth::id());
+        $group->forgetMembersCache();
 
         return back()->with('success', 'Group updated successfully.');
     }
@@ -162,9 +163,8 @@ class GroupController extends Controller
             abort(403);
         }
 
+        $group->forgetMembersCache();
         $group->delete(); // cascades to members, expenses, shares, logs, settlements
-
-        Cache::forget("dashboard_groups_" . Auth::id());
 
         return redirect()->route('groups.index')->with('success', 'Group deleted.');
     }
@@ -194,6 +194,7 @@ class GroupController extends Controller
         }
 
         $group->members()->attach($user->id, ['joined_at' => now()]);
+        $group->forgetMembersCache();
 
         ActivityLog::create([
             'group_id' => $group->id,
@@ -218,7 +219,9 @@ class GroupController extends Controller
             return back()->with('error', 'You cannot remove yourself as the owner.')->with('modal', 'edit-group');
         }
 
+        $group->forgetMembersCache();
         $group->members()->detach($userId);
+        Cache::forget("dashboard_groups_{$userId}");
 
         return back()->with('success', 'Member removed.')->with('modal', 'edit-group');
     }
@@ -262,7 +265,7 @@ class GroupController extends Controller
             'type'     => 'settle',
         ]);
 
-        Cache::forget("dashboard_groups_" . Auth::id());
+        $group->forgetMembersCache();
 
         return back()->with('success', 'Settlement recorded!');
     }
@@ -286,7 +289,7 @@ class GroupController extends Controller
             'request_amount'     => $request->amount,
         ]);
 
-        Cache::forget("dashboard_groups_" . Auth::id());
+        $group->forgetMembersCache();
 
         return back()->with('success', 'Settlement request sent!');
     }

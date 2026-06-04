@@ -31,6 +31,29 @@
         .heading-font {
             font-family: 'Outfit', sans-serif;
         }
+        @keyframes letter-fade-in {
+            0% {
+                opacity: 0;
+                transform: translateY(16px) scale(0.9);
+                filter: blur(3px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+        .animated-letter {
+            display: inline-block;
+            opacity: 0;
+            animation: letter-fade-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s;
+            cursor: default;
+        }
+        .animated-letter:hover {
+            transform: translateY(-8px) scale(1.18);
+            color: #6C3AF4;
+        }
     </style>
 </head>
 @php
@@ -64,14 +87,14 @@
          :style="activeModal ? 'filter: blur(10px); transform: scale(0.985); pointer-events: none; transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);' : 'transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);'">
         
         <!-- HEADER / NAVIGATION -->
-        <header class="w-full px-6 py-5 md:px-12 flex justify-between items-center max-w-7xl mx-auto">
+        <header class="w-full px-6 py-5 md:px-[1.5in] flex justify-between items-center max-w-none">
             <!-- LOGO -->
             <a href="/" class="flex items-center gap-2 outline-none">
                 <img src="{{ asset('assets/logo.png') }}?v=3" class="h-9 md:h-11 transition transform hover:scale-105 active:scale-95" alt="PayPatch Logo">
             </a>
 
             <!-- NAVIGATION CAPSULE -->
-            <nav class="backdrop-blur-md bg-white/20 border border-white/30 rounded-full py-1.5 pl-8 pr-2 flex items-center gap-8 shadow-lg shadow-purple-950/5">
+            <nav class="backdrop-blur-md bg-white/20 border border-white/30 rounded-full py-2.5 pl-12 pr-3 flex items-center gap-10 md:gap-14 shadow-lg shadow-purple-950/5">
                 <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block">Home</a>
                 <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block">About us</a>
                 <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block">Premium</a>
@@ -84,10 +107,10 @@
         </header>
 
         <!-- LANDING HERO CONTENT -->
-        <main class="flex-grow flex items-center max-w-7xl mx-auto w-full px-6 md:px-12 py-12 md:py-24">
-            <div class="max-w-2xl text-left flex flex-col items-start gap-4 md:gap-6">
+        <main class="flex-grow flex items-center w-full px-6 md:px-[1.5in] py-12 md:py-24 max-w-none">
+            <div class="max-w-5xl text-left flex flex-col items-start gap-4 md:gap-6">
                 <!-- HERO HEADING -->
-                <h1 class="heading-serif text-5xl md:text-7xl font-semibold text-[#1A103C] leading-[1.15] tracking-tight">
+                <h1 id="hero-title" class="heading-serif text-5xl md:text-7xl font-semibold text-[#1A103C] leading-[1.15] tracking-tight">
                     Share every moment<br>
                     Settle every balance..
                 </h1>
@@ -431,5 +454,33 @@
 
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const titleEl = document.getElementById('hero-title');
+            if (titleEl) {
+                const lines = titleEl.innerHTML.split('<br>');
+                let finalHtml = '';
+                let globalDelay = 0;
+                
+                lines.forEach((line, lineIndex) => {
+                    const trimmedLine = line.trim();
+                    const chars = Array.from(trimmedLine);
+                    chars.forEach((char) => {
+                        if (char === ' ') {
+                            finalHtml += '<span class="inline-block">&nbsp;</span>';
+                        } else {
+                            const delay = globalDelay * 0.03;
+                            finalHtml += `<span class="animated-letter" style="animation-delay: ${delay}s">${char}</span>`;
+                            globalDelay++;
+                        }
+                    });
+                    if (lineIndex < lines.length - 1) {
+                        finalHtml += '<br>';
+                    }
+                });
+                titleEl.innerHTML = finalHtml;
+            }
+        });
+    </script>
 </body>
 </html>

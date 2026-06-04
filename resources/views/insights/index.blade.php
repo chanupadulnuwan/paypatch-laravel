@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>PayPatch — My Groups</title>
+    <title>PayPatch — Personal Insights</title>
 
     <!-- Google Fonts for Premium Pairings -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +17,9 @@
 
     <!-- Alpine.js Core -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Chart.js for premium analytics visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
@@ -32,11 +35,10 @@
 </head>
 <body class="h-full flex overflow-hidden bg-[#F8F9FD] text-[#1A103C]" 
       x-data="{ 
-          profileOpen: {{ session('modal') === 'profile' ? 'true' : 'false' }}, 
-          showNewGroupModal: false 
+          profileOpen: {{ session('modal') === 'profile' ? 'true' : 'false' }} 
       }">
 
-    <!-- ==================== LEFT SIDEBAR (EXACT SAME NAV BAR) ==================== -->
+    <!-- ==================== LEFT SIDEBAR ==================== -->
     <aside class="w-72 flex-shrink-0 relative overflow-hidden bg-cover bg-center flex flex-col justify-between p-6 border-r border-[#1A103C]/5"
            style="background-image: url('{{ asset('assets/sidebar-bg.png') }}?v=3');">
         
@@ -53,8 +55,8 @@
             <nav class="flex flex-col gap-2.5">
                 <!-- Dashboard -->
                 <a href="{{ route('dashboard') }}" 
-                   class="flex items-center gap-3.5 px-4 py-3 {{ Route::is('dashboard') ? 'bg-[#6C3AF4]/10 border border-[#6C3AF4]/15 text-[#6C3AF4] font-bold' : 'hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold' }} rounded-2xl text-sm transition transform active:scale-98">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="{{ Route::is('dashboard') ? '2.5' : '2' }}" viewBox="0 0 24 24">
+                   class="flex items-center gap-3.5 px-4 py-3 hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold rounded-2xl text-sm transition transform active:scale-98">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"></path>
                     </svg>
                     Dashboard
@@ -62,8 +64,8 @@
 
                 <!-- Groups -->
                 <a href="{{ route('groups.index') }}" 
-                   class="flex items-center gap-3.5 px-4 py-3 {{ Route::is('groups.*') ? 'bg-[#6C3AF4]/10 border border-[#6C3AF4]/15 text-[#6C3AF4] font-bold' : 'hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold' }} rounded-2xl text-sm transition transform active:scale-98">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="{{ Route::is('groups.*') ? '2.5' : '2' }}" viewBox="0 0 24 24">
+                   class="flex items-center gap-3.5 px-4 py-3 hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold rounded-2xl text-sm transition transform active:scale-98">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
                     </svg>
                     Groups
@@ -71,8 +73,8 @@
 
                 <!-- Friends -->
                 <a href="{{ route('friends') }}" 
-                   class="flex items-center gap-3.5 px-4 py-3 {{ Route::is('friends') ? 'bg-[#6C3AF4]/10 border border-[#6C3AF4]/15 text-[#6C3AF4] font-bold' : 'hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold' }} rounded-2xl text-sm transition transform active:scale-98">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="{{ Route::is('friends') ? '2.5' : '2' }}" viewBox="0 0 24 24">
+                   class="flex items-center gap-3.5 px-4 py-3 hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold rounded-2xl text-sm transition transform active:scale-98">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
                     </svg>
                     Friends
@@ -80,8 +82,8 @@
 
                 <!-- Activity -->
                 <a href="{{ route('activity') }}" 
-                   class="flex items-center gap-3.5 px-4 py-3 {{ Route::is('activity') ? 'bg-[#6C3AF4]/10 border border-[#6C3AF4]/15 text-[#6C3AF4] font-bold' : 'hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold' }} rounded-2xl text-sm transition transform active:scale-98">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="{{ Route::is('activity') ? '2.5' : '2' }}" viewBox="0 0 24 24">
+                   class="flex items-center gap-3.5 px-4 py-3 hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold rounded-2xl text-sm transition transform active:scale-98">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"></path>
                     </svg>
                     Activity
@@ -89,8 +91,8 @@
 
                 <!-- Insights -->
                 <a href="{{ route('insights') }}" 
-                   class="flex items-center gap-3.5 px-4 py-3 {{ Route::is('insights') ? 'bg-[#6C3AF4]/10 border border-[#6C3AF4]/15 text-[#6C3AF4] font-bold' : 'hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold' }} rounded-2xl text-sm transition relative">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="{{ Route::is('insights') ? '2.5' : '2' }}" viewBox="0 0 24 24">
+                   class="flex items-center gap-3.5 px-4 py-3 bg-[#6C3AF4]/10 border border-[#6C3AF4]/15 text-[#6C3AF4] font-bold rounded-2xl text-sm transition transform active:scale-98">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"></path>
                     </svg>
@@ -104,7 +106,6 @@
             <div @click="profileOpen = true" 
                  class="w-full flex items-center justify-between p-3.5 bg-white border border-[#1A103C]/10 rounded-2xl shadow-md cursor-pointer hover:bg-slate-50 transition transform active:scale-99 animate-fade-in">
                 <div class="flex items-center gap-3">
-                    <!-- User Avatar -->
                     @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
                         <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
                     @else
@@ -112,13 +113,12 @@
                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                         </div>
                     @endif
-                    <!-- User Name -->
                     <span class="font-extrabold text-sm text-[#1A103C]">{{ explode(' ', Auth::user()->name)[0] }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- ==================== EDIT PROFILE DRAWER (ON NAV BAR) ==================== -->
+        <!-- ==================== EDIT PROFILE DRAWER ==================== -->
         <div x-show="profileOpen"
              x-transition:enter="transition ease-out duration-300 transform"
              x-transition:enter-start="-translate-x-full"
@@ -148,11 +148,10 @@
                  </form>
              </div>
 
-             <!-- Form for profile, avatar and password update -->
+             <!-- Form -->
              <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="flex flex-col gap-5 flex-grow">
                  @csrf
 
-                 <!-- Avatar Upload Section -->
                  <div class="flex flex-col items-center gap-3">
                      <div class="relative group">
                          @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
@@ -162,7 +161,6 @@
                                  {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                              </div>
                          @endif
-                         <!-- Camera Upload Indicator overlay -->
                          <label class="absolute inset-0 bg-[#1A103C]/60 text-white rounded-full flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition duration-150">
                              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path>
@@ -174,16 +172,7 @@
                      <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Change photo</span>
                  </div>
 
-                 <!-- Display errors from validation -->
-                 @if ($errors->any() && session('modal') === 'profile')
-                     <div class="p-3 bg-red-50 border border-red-100 rounded-xl flex flex-col gap-1">
-                         @foreach ($errors->all() as $error)
-                             <span class="text-[11px] text-red-600 font-semibold">{{ $error }}</span>
-                         @endforeach
-                     </div>
-                 @endif
-
-                 <!-- Profile inputs -->
+                 <!-- Inputs -->
                  <div class="flex flex-col gap-1.5">
                      <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Full Name</label>
                      <input type="text" name="name" value="{{ Auth::user()->name }}" required
@@ -196,23 +185,20 @@
                             class="block w-full px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-[#1A103C] focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/15 focus:border-[#6C3AF4]/60 transition">
                  </div>
 
-                 <!-- Password Section -->
+                 <!-- Password -->
                  <div class="mt-4 border-t border-slate-100 pt-4">
                      <h4 class="text-[11px] font-bold text-[#1A103C]/80 uppercase tracking-wider mb-3">Update Password</h4>
-                     
                      <div class="flex flex-col gap-3">
                          <div class="flex flex-col gap-1.5">
                              <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Current Password</label>
                              <input type="password" name="current_password" placeholder="••••••••"
                                     class="block w-full px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-[#1A103C] focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/15 focus:border-[#6C3AF4]/60 transition">
                          </div>
-
                          <div class="flex flex-col gap-1.5">
                              <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">New Password</label>
                              <input type="password" name="new_password" placeholder="••••••••"
                                     class="block w-full px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-[#1A103C] focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/15 focus:border-[#6C3AF4]/60 transition">
                          </div>
-
                          <div class="flex flex-col gap-1.5">
                              <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Confirm New Password</label>
                              <input type="password" name="new_password_confirmation" placeholder="••••••••"
@@ -307,208 +293,326 @@
                      </div>
                  </div>
 
-                 <!-- Action Button -->
                  <button type="submit" 
                          class="mt-auto w-full py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-xl font-bold text-xs shadow-md shadow-purple-500/10 transition transform active:scale-97">
                      Save Settings
                  </button>
              </form>
         </div>
-
     </aside>
 
-    <!-- ==================== MAIN WORKSPACE ==================== -->
+    <!-- ==================== MAIN CONTENT WORKSPACE ==================== -->
     <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full">
-
-        <!-- Flash alerts -->
-        @if(session('success'))
-            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" x-transition
-                 class="mb-5 p-4 bg-green-100/80 border border-green-200 text-green-700 rounded-2xl text-sm font-semibold flex justify-between items-center transition duration-300">
-                <span>{{ session('success') }}</span>
-                <button @click="show = false" class="text-green-700 hover:text-green-950 ml-2 outline-none font-bold text-xs">✕</button>
-            </div>
-        @endif
-
+        
         <!-- ==================== HEADER ROW ==================== -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <!-- Title & Subtext -->
             <div>
                 <h1 class="heading-serif text-3xl md:text-[2.1rem] font-bold text-[#1A103C]">
-                    My Groups 👥
+                    Personal Insights
                 </h1>
-                <p class="text-slate-500 font-medium text-sm mt-1">Manage and track your shared expense circles.</p>
+                <p class="text-slate-500 font-medium text-sm mt-1">Deep analysis of your spending splits, balances, and top networks.</p>
             </div>
-
-            <!-- Search & Actions -->
-            <div class="flex items-center gap-4 w-full md:w-auto">
-                <!-- Search Input Mockup -->
-                <div class="relative w-full md:w-56">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
-                        <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z"></path>
-                        </svg>
-                    </span>
-                    <input type="text" placeholder="Search groups..." 
-                           class="block w-full pl-10 pr-4 py-2 bg-white border border-slate-200/80 rounded-full text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/10 focus:border-[#6C3AF4]/60 transition text-sm">
-                </div>
-
-                <!-- Create Group CTA Button -->
-                <button @click="showNewGroupModal = true" 
-                        class="flex-shrink-0 px-6 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-2xl font-bold text-sm shadow-lg shadow-purple-500/10 transition transform active:scale-97 flex items-center gap-1.5 outline-none whitespace-nowrap">
-                    <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
-                    </svg>
-                    New Group
-                </button>
+            
+            <div class="flex items-center gap-4">
+                <span class="text-xs font-bold text-slate-500 bg-white border border-slate-200/80 px-4 py-2 rounded-full shadow-sm">
+                    ✨ Personal Mode
+                </span>
             </div>
         </header>
 
-        <!-- ==================== GROUPS GRID ==================== -->
-        @if($groups->isEmpty())
-            <div class="text-center py-20 text-slate-400 bg-white border border-slate-200/80 rounded-[2.2rem] shadow-sm max-w-xl mx-auto mt-10">
-                <div class="text-5xl mb-4">👥</div>
-                <h3 class="heading-font text-xl font-extrabold text-[#1A103C]">No groups yet</h3>
-                <p class="text-slate-400 text-sm mt-1">Join or create a group to start spliting bills with friends.</p>
-                <a href="{{ route('groups.create') }}" 
-                   class="mt-4 inline-block px-5 py-2.5 bg-[#6C3AF4] hover:bg-[#592BD4] text-white font-bold rounded-xl text-xs shadow-md transition transform active:scale-97">
-                    Create first group
-                </a>
+        <!-- ==================== SUMMARY CARDS ROW ==================== -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- 1. Total Paid Card -->
+            <div class="bg-gradient-to-tr from-purple-500/5 to-purple-500/10 border border-purple-200/30 rounded-3xl p-6 flex justify-between items-start shadow-sm">
+                <div class="flex flex-col gap-1">
+                    <span class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Cash Paid</span>
+                    <h3 class="heading-font text-3xl font-extrabold text-[#6C3AF4] mt-1.5">
+                        Rs. {{ number_format($totalPaid, 2) }}
+                    </h3>
+                    <span class="text-xs text-slate-400 font-semibold mt-2.5">Expenses you fully paid for</span>
+                </div>
+                <div class="h-10 w-10 bg-purple-100 flex items-center justify-center rounded-full text-[#6C3AF4]">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.22.03a6.009 6.009 0 012.35 1.042c.83.626 1.43 1.523 1.73 2.546l.22.813c.094.347-.13.687-.488.758a.562.562 0 01-.634-.413l-.22-.813a4.877 4.877 0 00-1.405-2.07 4.887 4.887 0 00-1.91-1.008V11.23M12 6c-2.316.035-4.148 1.488-4.148 3.51 0 1.54 1.07 2.653 2.585 3.097v.032c1.782.44 2.87 1.516 2.87 3.361 0 2.05-1.921 3.52-4.307 3.52m4.307-10.428V3"></path>
+                    </svg>
+                </div>
             </div>
-        @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($groups as $group)
-                    @php
-                        $balance = $group->your_balance ?? 0;
-                        $coverStyle = '';
-                        $coverClass = 'bg-gradient-to-tr from-[#6C3AF4] to-[#B026F3]'; // Default dynamic gradient
-                        if ($group->cover_image_path) {
-                            if (str_starts_with($group->cover_image_path, 'preset:')) {
-                                $preset = str_replace('preset:', '', $group->cover_image_path);
-                                if ($preset === 'sunrise') {
-                                    $coverClass = 'bg-gradient-to-tr from-[#FF512F] to-[#DD2476]';
-                                } elseif ($preset === 'ocean') {
-                                    $coverClass = 'bg-gradient-to-tr from-[#2193b0] to-[#6dd5ed]';
-                                } elseif ($preset === 'deepspace') {
-                                    $coverClass = 'bg-gradient-to-tr from-[#0F2027] to-[#2C5364]';
-                                } elseif ($preset === 'dusk') {
-                                    $coverClass = 'bg-gradient-to-tr from-[#2C3E50] to-[#FD746C]';
-                                } elseif ($preset === 'cyberpunk') {
-                                    $coverClass = 'bg-gradient-to-tr from-[#F107A3] to-[#7B2CBF]';
-                                }
-                            } else {
-                                $coverStyle = "background-image: url('" . asset($group->cover_image_path) . "?v=" . time() . "');";
-                                $coverClass = 'bg-cover bg-center';
-                            }
-                        }
-                    @endphp
-                    <div class="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition duration-300 flex flex-col justify-between">
-                        <!-- Card Banner Preview -->
-                        <div class="h-28 {{ $coverClass }} relative" style="{{ $coverStyle }}">
-                            <!-- Light overlay for readability -->
-                            <div class="absolute inset-0 bg-slate-950/15"></div>
-                            
-                            <!-- Dynamic Currency Badge -->
-                            <span class="absolute top-4 right-4 bg-white/95 backdrop-blur text-[#6C3AF4] text-[9px] font-extrabold px-2.5 py-1 rounded-full shadow-sm">
-                                {{ $group->currency }}
-                            </span>
-                        </div>
 
-                        <!-- Card Content -->
-                        <div class="p-6 flex-grow flex flex-col justify-between gap-4">
-                            <div>
-                                <h3 class="heading-font text-lg font-extrabold text-[#1A103C] hover:text-[#6C3AF4] transition">
-                                    <a href="{{ route('groups.show', $group) }}">{{ $group->name }}</a>
-                                </h3>
-                                <p class="text-slate-400 font-semibold text-[10px] uppercase tracking-wider mt-1">{{ $group->members_count }} members</p>
-                            </div>
+            <!-- 2. Total Cost / Share Card -->
+            <div class="bg-gradient-to-tr from-indigo-500/5 to-indigo-500/10 border border-indigo-200/30 rounded-3xl p-6 flex justify-between items-start shadow-sm">
+                <div class="flex flex-col gap-1">
+                    <span class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Share / Cost</span>
+                    <h3 class="heading-font text-3xl font-extrabold text-[#4F46E5] mt-1.5">
+                        Rs. {{ number_format($totalShare, 2) }}
+                    </h3>
+                    <span class="text-xs text-slate-400 font-semibold mt-2.5">Your absolute share of splits</span>
+                </div>
+                <div class="h-10 w-10 bg-indigo-100 flex items-center justify-center rounded-full text-[#4F46E5]">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"></path>
+                    </svg>
+                </div>
+            </div>
 
-                            <!-- Active Balance Row -->
-                            <div class="flex items-center justify-between py-2 border-t border-slate-100/60 mt-2">
-                                <div>
-                                    <span class="text-slate-400 text-[9px] font-bold uppercase tracking-wider block">Your Balance</span>
-                                    @if($balance > 0)
-                                        <span class="text-xs font-bold text-[#10B981] mt-0.5 block">You are owed {{ $group->currency }} {{ number_format($balance, 2) }}</span>
-                                    @elseif($balance < 0)
-                                        <span class="text-xs font-bold text-[#E63946] mt-0.5 block">You owe {{ $group->currency }} {{ number_format(abs($balance), 2) }}</span>
-                                    @else
-                                        <span class="text-xs font-bold text-slate-400 mt-0.5 block">All settled</span>
-                                    @endif
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-slate-400 text-[9px] font-bold uppercase tracking-wider block">Total Expenses</span>
-                                    <span class="text-xs font-bold text-slate-800 mt-0.5 block">{{ $group->currency }} {{ number_format($group->total_expenses, 2) }}</span>
-                                </div>
-                            </div>
-                        </div>
+            <!-- 3. Net Balance Card -->
+            @php
+                $isOwed = $netBalance >= 0;
+            @endphp
+            <div class="rounded-3xl p-6 flex justify-between items-start shadow-sm border
+                 {{ $isOwed ? 'bg-[#F0FFF4] border-emerald-200/30 text-emerald-900' : 'bg-[#FFF0F0] border-red-200/30 text-red-900' }}">
+                <div class="flex flex-col gap-1">
+                    <span class="text-slate-500 text-xs font-bold uppercase tracking-wider">Net Balance</span>
+                    <h3 class="heading-font text-3xl font-extrabold mt-1.5 {{ $isOwed ? 'text-[#10B981]' : 'text-[#E63946]' }}">
+                        Rs. {{ number_format(abs($netBalance), 2) }}
+                    </h3>
+                    <span class="text-xs text-slate-400 font-semibold mt-2.5">
+                        {{ $isOwed ? 'You are owed overall' : 'You owe overall across groups' }}
+                    </span>
+                </div>
+                <div class="h-10 w-10 flex items-center justify-center rounded-full 
+                     {{ $isOwed ? 'bg-emerald-100 text-[#10B981]' : 'bg-red-100 text-[#E63946]' }}">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                        @if($isOwed)
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 4.5l-15 15m0 0h11.25m-11.25 0V8.25"></path>
+                        @else
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
+                        @endif
+                    </svg>
+                </div>
+            </div>
+        </section>
 
-                        <!-- Card Footer Link -->
-                        <a href="{{ route('groups.show', $group) }}" 
-                           class="block text-center py-3 bg-slate-50 border-t border-slate-100 hover:bg-[#6C3AF4]/5 text-[#6C3AF4] font-bold text-xs transition">
-                            View Details →
-                        </a>
+        <!-- ==================== ANALYTICS CHARTS GRID ==================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
+            <!-- Spending Trend line chart -->
+            <section class="lg:col-span-7 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="heading-font text-base font-extrabold text-[#1A103C]">Monthly Spending Trend</h2>
+                        <p class="text-[11px] text-slate-400 font-medium">Your monthly split cost shares over the last 6 months.</p>
                     </div>
-                @endforeach
+                </div>
+                <div class="relative w-full h-64">
+                    <canvas id="spendingTrendChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Group breakdown doughnut chart -->
+            <section class="lg:col-span-5 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="heading-font text-base font-extrabold text-[#1A103C]">Spending by Group</h2>
+                        <p class="text-[11px] text-slate-400 font-medium">Cost shares divided by group splits.</p>
+                    </div>
+                </div>
+                <div class="relative w-full h-64">
+                    @if(empty($groupSpendingNames))
+                        <div class="absolute inset-0 flex items-center justify-center text-slate-400 font-bold text-xs">
+                            No group splits recorded yet.
+                        </div>
+                    @else
+                        <canvas id="groupBreakdownChart"></canvas>
+                    @endif
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PEER BALANCES GRID ==================== -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Debtors (Who owes you) -->
+            <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <h3 class="heading-font text-base font-bold text-[#1A103C] mb-4 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    Who Owes You (Top Debtors)
+                </h3>
+                @if(empty($topDebtors))
+                    <div class="text-center py-8 text-slate-400 text-xs font-semibold">
+                        No one owes you money right now.
+                    </div>
+                @else
+                    <div class="flex flex-col gap-4">
+                        @foreach($topDebtors as $debtor)
+                            <div class="flex items-center justify-between p-3.5 hover:bg-[#F8F9FD] rounded-2xl border border-slate-100 transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 flex items-center justify-center text-white font-extrabold text-xs shadow-sm">
+                                        {{ strtoupper(substr($debtor['user']->name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <span class="font-extrabold text-xs block text-[#1A103C]">{{ $debtor['user']->name }}</span>
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">{{ $debtor['user']->email }}</span>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-extrabold text-[#10B981]">
+                                    Rs. {{ number_format($debtor['balance'], 2) }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+
+            <!-- Creditors (Who you owe) -->
+            <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <h3 class="heading-font text-base font-bold text-[#1A103C] mb-4 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+                    Who You Owe (Top Creditors)
+                </h3>
+                @if(empty($topCreditors))
+                    <div class="text-center py-8 text-slate-400 text-xs font-semibold">
+                        You don't owe anyone money right now. 🎉
+                    </div>
+                @else
+                    <div class="flex flex-col gap-4">
+                        @foreach($topCreditors as $creditor)
+                            <div class="flex items-center justify-between p-3.5 hover:bg-[#F8F9FD] rounded-2xl border border-slate-100 transition">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-rose-400 to-orange-500 flex items-center justify-center text-white font-extrabold text-xs shadow-sm">
+                                        {{ strtoupper(substr($creditor['user']->name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <span class="font-extrabold text-xs block text-[#1A103C]">{{ $creditor['user']->name }}</span>
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide">{{ $creditor['user']->email }}</span>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-extrabold text-[#E63946]">
+                                    Rs. {{ number_format($creditor['balance'], 2) }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+        </div>
+
+        <!-- ==================== KEY RECORDS ROW ==================== -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Average split share -->
+            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+                <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-indigo-500 flex-shrink-0">
+                    📊
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Average Split share</span>
+                    <span class="heading-font text-lg font-extrabold text-[#1A103C] mt-1 block">Rs. {{ number_format($avgExpenseShare, 2) }}</span>
+                    <span class="text-[9px] text-slate-400 font-semibold mt-0.5 block">Per split expense share</span>
+                </div>
             </div>
-        @endif
+
+            <!-- Most active group -->
+            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+                <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-purple-500 flex-shrink-0">
+                    ⚡
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Most Active Group</span>
+                    <span class="heading-font text-lg font-extrabold text-[#1A103C] mt-1 block truncate max-w-[180px]" title="{{ $mostActiveGroup->name ?? 'N/A' }}">
+                        {{ $mostActiveGroup->name ?? 'None Yet' }}
+                    </span>
+                    <span class="text-[9px] text-slate-400 font-semibold mt-0.5 block">
+                        {{ $mostActiveGroup ? $mostActiveGroup->expenses->count() . ' expenses registered' : 'No expenses recorded' }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Most expensive group -->
+            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+                <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-pink-500 flex-shrink-0">
+                    💰
+                </div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Most Expensive Group</span>
+                    <span class="heading-font text-lg font-extrabold text-[#1A103C] mt-1 block truncate max-w-[180px]" title="{{ $mostExpensiveGroup->name ?? 'N/A' }}">
+                        {{ $mostExpensiveGroup->name ?? 'None Yet' }}
+                    </span>
+                    <span class="text-[9px] text-slate-400 font-semibold mt-0.5 block">
+                        {{ $mostExpensiveGroup ? 'Rs. ' . number_format($mostExpensiveGroup->expenses->sum('amount'), 2) . ' total' : 'No expenses recorded' }}
+                    </span>
+                </div>
+            </div>
+        </section>
 
     </main>
 
-    <!-- ==================== NEW GROUP MODAL ==================== -->
-    <div x-show="showNewGroupModal" 
-         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
-         x-transition
-         style="display: none;">
-        
-        <div @click.away="showNewGroupModal = false"
-             class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-[#1A103C]/5"
-             x-transition:enter="transition ease-out duration-300 transform"
-             x-transition:enter-start="scale-95 opacity-0 translate-y-4"
-             x-transition:enter-end="scale-100 opacity-100 translate-y-0">
-            
-            <form method="POST" action="{{ route('groups.store') }}">
-                @csrf
-                
-                <!-- Modal Header -->
-                <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
-                    <div>
-                        <h3 class="heading-font text-lg font-bold text-[#1A103C]">Create a New Group</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Start splitting expenses with friends.</p>
-                    </div>
-                    <button type="button" @click="showNewGroupModal = false" 
-                            class="p-1.5 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition outline-none">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
+    <!-- ==================== CHARTS SCRIPT ==================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Chart 1: Spending Trend over time (Line Chart)
+            const ctx1 = document.getElementById('spendingTrendChart').getContext('2d');
+            const fillGrad = ctx1.createLinearGradient(0, 0, 0, 240);
+            fillGrad.addColorStop(0, 'rgba(108, 58, 244, 0.22)');
+            fillGrad.addColorStop(1, 'rgba(108, 58, 244, 0.00)');
 
-                <!-- Modal Body Form -->
-                <div class="p-6 flex flex-col gap-4">
-                    <!-- Group Name -->
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Group Name</label>
-                        <input type="text" 
-                               name="name"
-                               placeholder="e.g. Goa Trip, Apartment 4B" 
-                               required
-                               class="block w-full px-4 py-2.5 bg-slate-50 border border-slate-200/80 rounded-2xl text-[#1A103C] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/15 focus:border-[#6C3AF4]/60 transition text-sm">
-                    </div>
-                </div>
+            new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: @json($months),
+                    datasets: [{
+                        label: 'My Splits Cost',
+                        data: @json($monthlySpending),
+                        borderColor: '#6C3AF4',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#6C3AF4',
+                        pointBorderWidth: 2,
+                        pointRadius: 4.5,
+                        pointHoverRadius: 6.5,
+                        tension: 0.38,
+                        fill: true,
+                        backgroundColor: fillGrad
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' }, color: '#8C8BA5' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(26, 16, 60, 0.05)', borderDash: [5, 5] },
+                            ticks: { font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' }, color: '#8C8BA5' }
+                        }
+                    }
+                }
+            });
 
-                <!-- Modal Footer Actions -->
-                <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex justify-end gap-3">
-                    <button type="button" @click="showNewGroupModal = false" 
-                            class="px-5 py-2.5 rounded-2xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 font-bold text-xs transition outline-none">
-                        Cancel
-                    </button>
-                    <button type="submit" 
-                            class="px-6 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-2xl font-bold text-xs shadow-md shadow-purple-500/10 transition outline-none">
-                        Create Group
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
+            // Chart 2: Group breakdown (Doughnut Chart)
+            const canvas2 = document.getElementById('groupBreakdownChart');
+            if (canvas2) {
+                const ctx2 = canvas2.getContext('2d');
+                new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: @json($groupSpendingNames),
+                        datasets: [{
+                            data: @json($groupSpendingTotals),
+                            backgroundColor: ['#6C3AF4', '#B026F3', '#3B82F6', '#10B981', '#F59E0B'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' },
+                                    boxWidth: 10,
+                                    padding: 10
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

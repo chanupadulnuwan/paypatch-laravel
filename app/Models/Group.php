@@ -52,4 +52,15 @@ class Group extends Model
     {
         return $this->hasMany(ActivityLog::class);
     }
+
+    /**
+     * Clear dashboard cache for all members of this group.
+     */
+    public function forgetMembersCache(): void
+    {
+        $members = $this->relationLoaded('members') ? $this->members : $this->members()->get(['users.id']);
+        foreach ($members as $member) {
+            \Illuminate\Support\Facades\Cache::forget("dashboard_groups_{$member->id}");
+        }
+    }
 }

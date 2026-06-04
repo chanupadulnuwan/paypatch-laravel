@@ -105,7 +105,7 @@ class ExpenseForm extends Component
             // Fire event → LogExpenseActivity listener writes to activity_logs
             ExpenseCreated::dispatch($expense, Auth::user());
 
-            Cache::forget('dashboard_groups_' . Auth::id());
+            $group->forgetMembersCache();
         });
 
         // Reset form after successful save

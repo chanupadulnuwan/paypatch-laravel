@@ -115,14 +115,13 @@
                 </a>
 
                 <!-- Insights -->
-                <a href="#" 
-                   class="flex items-center gap-3.5 px-4 py-3 hover:bg-[#1A103C]/5 rounded-2xl text-[#1A103C]/70 hover:text-[#1A103C] font-semibold text-sm transition relative">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <a href="{{ route('insights') }}" 
+                   class="flex items-center gap-3.5 px-4 py-3 {{ Route::is('insights') ? 'bg-[#6C3AF4]/10 border border-[#6C3AF4]/15 text-[#6C3AF4] font-bold' : 'hover:bg-[#1A103C]/5 text-[#1A103C]/70 hover:text-[#1A103C] font-semibold' }} rounded-2xl text-sm transition relative">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="{{ Route::is('insights') ? '2.5' : '2' }}" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"></path>
                     </svg>
                     Insights
-                    <span class="absolute right-4 bg-purple-600/10 text-purple-600 text-[10px] font-bold px-2 py-0.5 rounded-full">Soon</span>
                 </a>
             </nav>
         </div>
@@ -245,6 +244,92 @@
                              <label class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Confirm New Password</label>
                              <input type="password" name="new_password_confirmation" placeholder="••••••••"
                                     class="block w-full px-3.5 py-2 bg-slate-50 border border-slate-200/80 rounded-xl text-sm text-[#1A103C] focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/15 focus:border-[#6C3AF4]/60 transition">
+                         </div>
+                     </div>
+                 </div>
+
+                 <!-- Plan & Billing Section -->
+                 <div class="mt-4 border-t border-slate-100 pt-4" x-data="{ upgradeModalOpen: false }">
+                     <h4 class="text-[11px] font-bold text-[#1A103C]/80 uppercase tracking-wider mb-2">Plan & Billing</h4>
+                     
+                     <div class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                         <div>
+                             <span class="text-[10px] font-bold text-slate-400 uppercase block">Current Tier</span>
+                             <span class="text-xs font-extrabold text-[#1A103C] mt-0.5 block">
+                                 {{ Auth::user()->account_type === 'premium' ? 'Premium Plan' : 'Free Tier' }}
+                             </span>
+                         </div>
+                         <button type="button" @click="upgradeModalOpen = true" 
+                                 class="px-3.5 py-1.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-xl font-bold text-[10px] shadow-md shadow-purple-500/10 transition transform active:scale-97 outline-none">
+                             🚀 Upgrade
+                         </button>
+                     </div>
+
+                     <!-- Upgrade Plan Popup Modal Overlay -->
+                     <div x-show="upgradeModalOpen" 
+                          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                          x-transition
+                          style="display: none;">
+                         
+                         <div @click.away="upgradeModalOpen = false"
+                              class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-[#1A103C]/5 text-left p-6">
+                             
+                             <!-- Header -->
+                             <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+                                 <div>
+                                     <h3 class="heading-font text-base font-bold text-[#1A103C]">Select Plan</h3>
+                                     <p class="text-[10px] text-slate-400 mt-0.5">Upgrade or downgrade your membership dynamically.</p>
+                                 </div>
+                                 <button type="button" @click="upgradeModalOpen = false" 
+                                         class="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition outline-none">
+                                     <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                     </svg>
+                                 </button>
+                             </div>
+
+                             <!-- List of packages -->
+                             <div class="flex flex-col gap-3.5 max-h-[320px] overflow-y-auto pr-1">
+                                 @php
+                                     $pkgs = \App\Models\Package::all();
+                                 @endphp
+                                 @forelse($pkgs as $p)
+                                     <form method="POST" action="{{ route('profile.upgradePlan') }}">
+                                         @csrf
+                                         <input type="hidden" name="plan_name" value="{{ $p->name }}">
+                                         <div class="border border-slate-200/80 rounded-2xl p-4 flex justify-between items-center hover:border-[#6C3AF4]/40 hover:bg-[#6C3AF4]/2 transition bg-white">
+                                             <div>
+                                                 <div class="flex items-center gap-1.5">
+                                                     <span class="font-bold text-[#1A103C] text-xs">{{ $p->name }}</span>
+                                                     @if(Auth::user()->account_type === 'premium' && ($p->name === 'Premium' || $p->name === 'Premium Plus'))
+                                                         <span class="bg-[#10B981]/15 text-[#10B981] text-[7px] font-black uppercase px-2 py-0.5 rounded-full">Active</span>
+                                                     @elseif(Auth::user()->account_type === 'free' && $p->name === 'Free Tier')
+                                                         <span class="bg-[#10B981]/15 text-[#10B981] text-[7px] font-black uppercase px-2 py-0.5 rounded-full">Active</span>
+                                                     @endif
+                                                 </div>
+                                                 <p class="text-[9px] text-slate-400 font-semibold mt-1">Limits: {{ $p->max_group_members }} members &bull; {{ $p->max_groups }} groups</p>
+                                             </div>
+                                             <button type="submit" 
+                                                     class="px-4 py-1.5 bg-[#6C3AF4] hover:bg-[#592BD4] text-white rounded-lg font-bold text-[10px] shadow-sm transition outline-none">
+                                                 Select
+                                             </button>
+                                         </div>
+                                     </form>
+                                 @empty
+                                     @foreach(['Free Tier', 'Premium', 'Premium Plus'] as $pn)
+                                         <form method="POST" action="{{ route('profile.upgradePlan') }}">
+                                             @csrf
+                                             <input type="hidden" name="plan_name" value="{{ $pn }}">
+                                             <div class="border border-slate-200 rounded-2xl p-4 flex justify-between items-center hover:border-[#6C3AF4]/40 hover:bg-[#6C3AF4]/2 transition">
+                                                 <div>
+                                                     <span class="font-bold text-[#1A103C] text-xs">{{ $pn }}</span>
+                                                 </div>
+                                                 <button type="submit" class="px-4 py-1.5 bg-[#6C3AF4] text-white rounded-lg font-bold text-[10px]">Select</button>
+                                             </div>
+                                         </form>
+                                     @endforeach
+                                 @endforelse
+                             </div>
                          </div>
                      </div>
                  </div>
