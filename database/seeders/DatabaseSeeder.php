@@ -82,6 +82,42 @@ class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
         ]);
 
+        // Dummy User 1
+        User::create([
+            'name' => 'Dummy User One',
+            'email' => 'user1@paypatch.com',
+            'password' => 'User1@123',
+            'role' => 'user',
+            'status' => 'active',
+            'account_type' => 'free',
+            'country' => 'Sri Lanka',
+            'email_verified_at' => now(),
+        ]);
+
+        // Dummy User 2
+        User::create([
+            'name' => 'Dummy User Two',
+            'email' => 'user2@paypatch.com',
+            'password' => 'User2@123',
+            'role' => 'user',
+            'status' => 'active',
+            'account_type' => 'free',
+            'country' => 'Sri Lanka',
+            'email_verified_at' => now(),
+        ]);
+
+        // Dummy User 3
+        User::create([
+            'name' => 'Dummy User Three',
+            'email' => 'user3@paypatch.com',
+            'password' => 'User3@123',
+            'role' => 'user',
+            'status' => 'active',
+            'account_type' => 'free',
+            'country' => 'Sri Lanka',
+            'email_verified_at' => now(),
+        ]);
+
         // ─── 2. CREATE BILL SPLITTING GROUPS ─────────────────────────────────
 
         // Ella Trip Group
