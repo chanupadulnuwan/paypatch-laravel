@@ -68,6 +68,8 @@ class GroupController extends Controller
                 'message'  => Auth::user()->name . ' created the group "' . $group->name . '"',
                 'type'     => 'group',
             ]);
+
+            $group->forgetMembersCache();
         });
 
         return redirect()->route('groups.index')->with('success', 'Group created!');
