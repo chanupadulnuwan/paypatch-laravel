@@ -322,8 +322,16 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <!-- Greeting & Subtext -->
             <div>
-                <h1 class="heading-serif text-3xl md:text-[2.1rem] font-bold text-[#1A103C]">
-                    Good morning, {{ explode(' ', Auth::user()->name)[0] }}! 👋
+                <h1 class="heading-serif text-3xl md:text-[2.1rem] font-bold text-[#1A103C]"
+                    x-data="{
+                        getGreeting() {
+                            const hour = new Date().getHours();
+                            if (hour < 12) return 'Good morning';
+                            if (hour < 17) return 'Good afternoon';
+                            return 'Good evening';
+                        }
+                    }">
+                    <span x-text="getGreeting()">Good morning</span>, {{ explode(' ', Auth::user()->name)[0] }}! 👋
                 </h1>
                 <p class="text-slate-500 font-medium text-sm mt-1">Here's what's happening with your balances today.</p>
             </div>

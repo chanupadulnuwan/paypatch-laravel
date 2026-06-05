@@ -34,6 +34,7 @@
       x-data="{ 
           profileOpen: {{ session('modal') === 'profile' ? 'true' : 'false' }},
           activeModal: '{{ session('modal') ?? '' }}', 
+          groupTab: '{{ session('modal') === 'edit-group' ? 'members' : 'settings' }}',
           showEditGroup: false,
           editingExpense: {
               id: null,
@@ -446,7 +447,7 @@
                 <div class="flex items-center gap-3">
                     <!-- Edit Group Trigger Button -->
                     @if($group->created_by === Auth::id())
-                        <button @click="activeModal = 'edit-group'" 
+                        <button @click="activeModal = 'edit-group'; groupTab = 'settings'" 
                                 class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/25 rounded-2xl flex items-center gap-1.5 transition text-xs font-bold shadow-md outline-none">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path>
@@ -811,7 +812,7 @@
                         </button>
 
                         <!-- Invite Friends Trigger -->
-                        <button @click="activeModal = 'invite'" 
+                        <button @click="activeModal = 'edit-group'; groupTab = 'members'" 
                                 class="flex-grow py-2.5 bg-[#6C3AF4]/5 hover:bg-[#6C3AF4]/10 text-purple-700 rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m2.25-9h1.5a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 013.75 3h1.5m10.5 0v3.75c0 .621.504 1.125 1.125 1.125h3.75M9 16.5h1.5M9 13.5h3.75m-3.75-3h3.75"></path>
@@ -1251,29 +1252,29 @@
             </div>
 
             <!-- Tabs / Sections: 1. Settings 2. Members 3. Danger Zone -->
-            <div x-data="{ currentTab: 'settings' }" class="space-y-8 flex-grow flex flex-col justify-between">
+            <div class="space-y-8 flex-grow flex flex-col justify-between">
                 <!-- Tab Headers -->
                 <div class="flex border-b border-slate-100 pb-3 gap-6">
-                    <button @click="currentTab = 'settings'" 
-                            :class="currentTab === 'settings' ? 'text-[#6C3AF4] border-b-2 border-[#6C3AF4] font-bold text-base' : 'text-slate-400 font-semibold text-base'"
+                    <button @click="groupTab = 'settings'" 
+                            :class="groupTab === 'settings' ? 'text-[#6C3AF4] border-b-2 border-[#6C3AF4] font-bold text-base' : 'text-slate-400 font-semibold text-base'"
                             class="pb-1.5 outline-none transition">
                         Settings
                     </button>
-                    <button @click="currentTab = 'members'" 
-                            :class="currentTab === 'members' ? 'text-[#6C3AF4] border-b-2 border-[#6C3AF4] font-bold text-base' : 'text-slate-400 font-semibold text-base'"
+                    <button @click="groupTab = 'members'" 
+                            :class="groupTab === 'members' ? 'text-[#6C3AF4] border-b-2 border-[#6C3AF4] font-bold text-base' : 'text-slate-400 font-semibold text-base'"
                             class="pb-1.5 outline-none transition flex items-center gap-2">
                         Members
                         <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full font-bold">{{ $members->count() }}</span>
                     </button>
-                    <button @click="currentTab = 'danger'" 
-                            :class="currentTab === 'danger' ? 'text-red-600 border-b-2 border-red-600 font-bold text-base' : 'text-slate-400 font-semibold text-base'"
+                    <button @click="groupTab = 'danger'" 
+                            :class="groupTab === 'danger' ? 'text-red-600 border-b-2 border-red-600 font-bold text-base' : 'text-slate-400 font-semibold text-base'"
                             class="pb-1.5 outline-none transition">
                         Danger Zone
                     </button>
                 </div>
 
                 <!-- Tab 1: Settings Form -->
-                <div x-show="currentTab === 'settings'" class="space-y-6 flex-grow">
+                <div x-show="groupTab === 'settings'" class="space-y-6 flex-grow">
                     <form method="POST" action="{{ route('groups.update', $group) }}" enctype="multipart/form-data" class="space-y-8">
                         @csrf
                         @method('PUT')
@@ -1363,7 +1364,7 @@
 
 
                 <!-- Tab 2: Member Management -->
-                <div x-show="currentTab === 'members'" class="space-y-4" style="display: none;">
+                <div x-show="groupTab === 'members'" class="space-y-4" style="display: none;">
                     <!-- Invite new member form -->
                     <form method="POST" action="{{ route('groups.addMember', $group) }}" class="space-y-3 pb-4 border-b border-slate-100">
                         @csrf
@@ -1412,7 +1413,7 @@
                 </div>
 
                 <!-- Tab 3: Danger Zone -->
-                <div x-show="currentTab === 'danger'" class="space-y-4" style="display: none;">
+                <div x-show="groupTab === 'danger'" class="space-y-4" style="display: none;">
                     <div class="p-4 bg-red-50 border border-red-200 rounded-2xl">
                         <h4 class="text-red-800 font-bold text-sm">Delete Group</h4>
                         <p class="text-red-700 text-xs mt-1">This action is irreversible. All expenses, settlements, shares, and activity logs will be permanently deleted.</p>
