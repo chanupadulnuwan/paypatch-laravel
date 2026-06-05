@@ -437,7 +437,7 @@
                     <div class="text-center py-12 text-slate-400">
                         <div class="text-4xl mb-3 text-slate-300">👥</div>
                         <p class="text-sm font-semibold">No groups yet.</p>
-                        <a href="{{ route('groups.create') }}" class="mt-2 inline-block text-xs font-bold text-[#6C3AF4] hover:underline">Create first group</a>
+                        <a @click.prevent="showNewGroupModal = true" href="#" class="mt-2 inline-block text-xs font-bold text-[#6C3AF4] hover:underline">Create first group</a>
                     </div>
                 @else
                     <div class="flex flex-col gap-4">

@@ -369,7 +369,7 @@
                 <div class="text-5xl mb-4">👥</div>
                 <h3 class="heading-font text-xl font-extrabold text-[#1A103C]">No groups yet</h3>
                 <p class="text-slate-400 text-sm mt-1">Join or create a group to start spliting bills with friends.</p>
-                <a href="{{ route('groups.create') }}" 
+                <a @click.prevent="showNewGroupModal = true" href="#" 
                    class="mt-4 inline-block px-5 py-2.5 bg-[#6C3AF4] hover:bg-[#592BD4] text-white font-bold rounded-xl text-xs shadow-md transition transform active:scale-97">
                     Create first group
                 </a>
