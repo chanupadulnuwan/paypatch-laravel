@@ -96,7 +96,11 @@ class ApiController extends Controller
         if ($request->has('phone'))    $user->phone    = $request->phone ? preg_replace('/[^+\d]/', '', $request->phone) : null;
 
         if ($request->hasFile('profile_photo')) {
-            $user->updateProfilePhoto($request->file('profile_photo'));
+            $this->deleteUploadedAsset($user->profile_photo_path);
+            $newPath = $this->storeUploadedImage($request, 'profile_photo', 'profile-photos', 'user_photo');
+            if ($newPath) {
+                $user->profile_photo_path = $newPath;
+            }
         }
 
         $user->save();
@@ -704,6 +708,11 @@ class ApiController extends Controller
 
     private function serializeAuthUser(User $user): array
     {
+        $photoUrl = null;
+        if ($user->profile_photo_path && !str_starts_with($user->profile_photo_path, 'preset:')) {
+            $photoUrl = url($user->profile_photo_path);
+        }
+
         return [
             'id'                => $user->id,
             'name'              => $user->name,
@@ -711,7 +720,7 @@ class ApiController extends Controller
             'email'             => $user->email,
             'phone'             => $user->phone,
             'country'           => $user->country,
-            'profile_photo_url' => $user->profile_photo_url,
+            'profile_photo_url' => $photoUrl,
         ];
     }
 
