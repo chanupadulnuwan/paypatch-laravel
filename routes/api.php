@@ -15,6 +15,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/logout', [ApiController::class, 'logout'])->name('api.logout');
     Route::get('/exchange-rates/usd-lkr', [ApiController::class, 'usdLkrRate'])->name('api.exchange.usdLkr');
     Route::get('/users/search', [ApiController::class, 'searchUsers'])->name('api.users.search');
+    Route::post('/users/match-phones', [ApiController::class, 'matchByPhone'])->name('api.users.matchPhones');
+    Route::post('/profile/update', [ApiController::class, 'updateProfile'])->name('api.profile.update');
+    Route::get('/profile', [ApiController::class, 'getProfile'])->name('api.profile.get');
 
     Route::get('/groups', [ApiController::class, 'groups'])->name('api.groups.index');
     Route::post('/groups', [ApiController::class, 'storeGroup'])->name('api.groups.store');

@@ -40,11 +40,7 @@ class ApiController extends Controller
 
         return response()->json([
             'token' => $token->plainTextToken,
-            'user'  => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-            ],
+            'user'  => $this->serializeAuthUser($user),
         ]);
     }
 
@@ -52,14 +48,18 @@ class ApiController extends Controller
     {
         $request->validate([
             'name'     => 'required|string|max:255',
+            'username' => 'nullable|string|max:50|alpha_dash|unique:users,username',
             'email'    => 'required|string|email|max:255|unique:users',
+            'phone'    => 'nullable|string|max:30',
             'password' => 'required|string|min:8',
             'country'  => 'nullable|string|max:255',
         ]);
 
         $user = User::create([
             'name'         => $request->name,
+            'username'     => $request->username,
             'email'        => $request->email,
+            'phone'        => $request->phone ? preg_replace('/[^+\d]/', '', $request->phone) : null,
             'country'      => $request->country,
             'password'     => $request->password,
             'role'         => 'user',
@@ -71,12 +71,76 @@ class ApiController extends Controller
 
         return response()->json([
             'token' => $token->plainTextToken,
-            'user'  => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-            ],
+            'user'  => $this->serializeAuthUser($user),
         ], 201);
+    }
+
+    public function getProfile(Request $request)
+    {
+        return response()->json(['user' => $this->serializeAuthUser($request->user())]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'name'          => 'sometimes|string|max:255',
+            'username'      => 'sometimes|nullable|string|max:50|alpha_dash|unique:users,username,' . $user->id,
+            'phone'         => 'sometimes|nullable|string|max:30',
+            'profile_photo' => 'sometimes|nullable|image|max:4096',
+        ]);
+
+        if ($request->has('name'))     $user->name     = $request->name;
+        if ($request->has('username')) $user->username = $request->username;
+        if ($request->has('phone'))    $user->phone    = $request->phone ? preg_replace('/[^+\d]/', '', $request->phone) : null;
+
+        if ($request->hasFile('profile_photo')) {
+            $user->updateProfilePhoto($request->file('profile_photo'));
+        }
+
+        $user->save();
+
+        return response()->json(['user' => $this->serializeAuthUser($user)]);
+    }
+
+    public function matchByPhone(Request $request)
+    {
+        $request->validate([
+            'phones'   => 'required|array|max:500',
+            'phones.*' => 'string|max:30',
+        ]);
+
+        $normalized = array_map(fn ($p) => preg_replace('/[^+\d]/', '', $p), $request->phones);
+        $normalized = array_filter($normalized, fn ($p) => strlen($p) >= 7);
+
+        $users = User::whereIn(
+            DB::raw("REGEXP_REPLACE(phone, '[^+0-9]', '')"),
+            array_values($normalized)
+        )
+            ->where('id', '!=', $request->user()->id)
+            ->get(['id', 'name', 'username', 'email', 'phone', 'profile_photo_path']);
+
+        $matched = [];
+        foreach ($request->phones as $original) {
+            $norm = preg_replace('/[^+\d]/', '', $original);
+            foreach ($users as $u) {
+                $uNorm = preg_replace('/[^+\d]/', '', $u->phone ?? '');
+                if ($norm === $uNorm && strlen($norm) >= 7) {
+                    $matched[$original] = [
+                        'id'                => $u->id,
+                        'name'              => $u->name,
+                        'username'          => $u->username,
+                        'email'             => $u->email,
+                        'phone'             => $u->phone,
+                        'profile_photo_url' => $u->profile_photo_url,
+                    ];
+                    break;
+                }
+            }
+        }
+
+        return response()->json(['matched' => $matched]);
     }
 
     public function logout(Request $request)
@@ -636,6 +700,19 @@ class ApiController extends Controller
             ->unique()
             ->values()
             ->all();
+    }
+
+    private function serializeAuthUser(User $user): array
+    {
+        return [
+            'id'                => $user->id,
+            'name'              => $user->name,
+            'username'          => $user->username,
+            'email'             => $user->email,
+            'phone'             => $user->phone,
+            'country'           => $user->country,
+            'profile_photo_url' => $user->profile_photo_url,
+        ];
     }
 
     private function serializeUser(User $user, int $currentUserId, ?Group $group = null): array
