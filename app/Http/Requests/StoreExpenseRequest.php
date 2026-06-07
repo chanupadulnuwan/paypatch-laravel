@@ -34,10 +34,11 @@ class StoreExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_id' => ['required', 'integer', 'exists:groups,id'],
-            'title'    => ['required', 'string', 'max:255'],
-            'amount'   => ['required', 'numeric', 'min:0.01'],
-            'paid_by'  => ['required', 'integer', 'exists:users,id'],
+            'group_id'      => ['required', 'integer', 'exists:groups,id'],
+            'title'         => ['required', 'string', 'max:255'],
+            'amount'        => ['required', 'numeric', 'min:0.01'],
+            'paid_by'       => ['required', 'integer', 'exists:users,id'],
+            'receipt_image' => ['nullable', 'image', 'max:4096'],
         ];
     }
 

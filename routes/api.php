@@ -3,28 +3,29 @@
 use App\Http\Controllers\Api\ApiController;
 use Illuminate\Support\Facades\Route;
 
-// ── Public API route ─────────────────────────────────────────────────────────
-// throttle:5,1 = max 5 requests per 1 minute per IP — prevents brute force
-// Returns a Sanctum token the client stores and sends as: Bearer <token>
 Route::post('/login', [ApiController::class, 'login'])
     ->middleware('throttle:5,1')
     ->name('api.login');
 
-// ── Protected API routes — require a valid Sanctum token ─────────────────────
-// Send token in header: Authorization: Bearer <your-token>
+Route::post('/register', [ApiController::class, 'register'])
+    ->middleware('throttle:5,1')
+    ->name('api.register');
+
 Route::middleware('auth:sanctum')->group(function () {
-
-    // Auth
     Route::delete('/logout', [ApiController::class, 'logout'])->name('api.logout');
+    Route::get('/exchange-rates/usd-lkr', [ApiController::class, 'usdLkrRate'])->name('api.exchange.usdLkr');
+    Route::get('/users/search', [ApiController::class, 'searchUsers'])->name('api.users.search');
 
-    // Groups
-    Route::get('/groups',        [ApiController::class, 'groups'])->name('api.groups.index');
-    Route::post('/groups',       [ApiController::class, 'storeGroup'])->name('api.groups.store');
-    Route::get('/groups/{group}',[ApiController::class, 'showGroup'])->name('api.groups.show');
+    Route::get('/groups', [ApiController::class, 'groups'])->name('api.groups.index');
+    Route::post('/groups', [ApiController::class, 'storeGroup'])->name('api.groups.store');
+    Route::get('/groups/{group}', [ApiController::class, 'showGroup'])->name('api.groups.show');
+    Route::post('/groups/{group}/update', [ApiController::class, 'updateGroup'])->name('api.groups.update');
+    Route::delete('/groups/{group}', [ApiController::class, 'destroyGroup'])->name('api.groups.destroy');
+    Route::post('/groups/{group}/members', [ApiController::class, 'addGroupMember'])->name('api.groups.members.store');
+    Route::delete('/groups/{group}/members/{user}', [ApiController::class, 'removeGroupMember'])->name('api.groups.members.destroy');
 
-    // Expenses — uses StoreExpenseRequest (handles authorize + validation)
-    Route::post('/expenses',     [ApiController::class, 'storeExpense'])->name('api.expenses.store');
+    Route::post('/expenses', [ApiController::class, 'storeExpense'])->name('api.expenses.store');
+    Route::delete('/expenses/{expense}', [ApiController::class, 'destroyExpense'])->name('api.expenses.destroy');
 
-    // Friends
-    Route::get('/friends',       [ApiController::class, 'friends'])->name('api.friends');
+    Route::get('/friends', [ApiController::class, 'friends'])->name('api.friends');
 });

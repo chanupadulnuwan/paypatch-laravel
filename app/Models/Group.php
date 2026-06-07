@@ -9,7 +9,7 @@ class Group extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'created_by', 'currency', 'cover_image_path'];
+    protected $fillable = ['name', 'created_by', 'currency', 'cover_image_path', 'profile_image_path'];
 
     // ─── SCOPE ───────────────────────────────────────────────────────────────
     // scopeForUser: only return groups where the given user is a member
