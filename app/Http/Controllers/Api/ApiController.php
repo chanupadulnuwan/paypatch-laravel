@@ -520,6 +520,78 @@ class ApiController extends Controller
         return response()->json(['friends' => $friends]);
     }
 
+    public function storeSettlement(Request $request, Group $group)
+    {
+        if (!$this->isGroupMember($group, $request->user()->id)) {
+            return response()->json(['message' => 'Not a member of this group.'], 403);
+        }
+
+        $request->validate([
+            'from_user_id' => 'required|integer|exists:users,id',
+            'to_user_id'   => 'required|integer|exists:users,id',
+            'amount'       => 'required|numeric|min:0.01',
+        ]);
+
+        \App\Models\Settlement::create([
+            'group_id'     => $group->id,
+            'from_user_id' => (int) $request->from_user_id,
+            'to_user_id'   => (int) $request->to_user_id,
+            'amount'       => $request->amount,
+        ]);
+
+        $fromUser = User::find($request->from_user_id);
+        $toUser   = User::find($request->to_user_id);
+
+        ActivityLog::create([
+            'group_id' => $group->id,
+            'user_id'  => $request->user()->id,
+            'message'  => ($fromUser->name ?? 'User') . ' settled up with ' . ($toUser->name ?? 'User') . '.',
+            'type'     => 'settlement',
+        ]);
+
+        return response()->json(['message' => 'Settlement recorded.'], 201);
+    }
+
+    public function sendReminder(Request $request, Group $group)
+    {
+        if (!$this->isGroupMember($group, $request->user()->id)) {
+            return response()->json(['message' => 'Not a member of this group.'], 403);
+        }
+
+        $request->validate([
+            'member_ids'   => 'required|array|min:1',
+            'member_ids.*' => 'integer|exists:users,id',
+        ]);
+
+        foreach ($request->member_ids as $memberId) {
+            ActivityLog::create([
+                'group_id' => $group->id,
+                'user_id'  => (int) $memberId,
+                'message'  => $request->user()->name . ' is reminding you to settle up in "' . $group->name . '".',
+                'type'     => 'reminder',
+            ]);
+        }
+
+        return response()->json(['message' => 'Reminders sent.']);
+    }
+
+    public function leaveGroup(Request $request, Group $group)
+    {
+        $userId = $request->user()->id;
+
+        if (!$this->isGroupMember($group, $userId)) {
+            return response()->json(['message' => 'Not a member of this group.'], 403);
+        }
+
+        if ($group->created_by === $userId) {
+            return response()->json(['message' => 'Group owner cannot leave. Transfer ownership or delete the group.'], 403);
+        }
+
+        $group->members()->detach($userId);
+
+        return response()->json(['message' => 'You have left the group.']);
+    }
+
     private function prepareGroup(Group $group, int $userId): Group
     {
         $group->your_balance = $this->calculateBalance($group, $userId);

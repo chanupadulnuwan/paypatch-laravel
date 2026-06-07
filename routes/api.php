@@ -27,5 +27,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/expenses', [ApiController::class, 'storeExpense'])->name('api.expenses.store');
     Route::delete('/expenses/{expense}', [ApiController::class, 'destroyExpense'])->name('api.expenses.destroy');
 
+    Route::post('/groups/{group}/settle', [ApiController::class, 'storeSettlement'])->name('api.groups.settle');
+    Route::post('/groups/{group}/remind', [ApiController::class, 'sendReminder'])->name('api.groups.remind');
+    Route::post('/groups/{group}/leave', [ApiController::class, 'leaveGroup'])->name('api.groups.leave');
+
     Route::get('/friends', [ApiController::class, 'friends'])->name('api.friends');
 });
