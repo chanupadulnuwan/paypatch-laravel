@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [ApiController::class, 'login'])
@@ -38,4 +39,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/groups/{group}/leave', [ApiController::class, 'leaveGroup'])->name('api.groups.leave');
 
     Route::get('/friends', [ApiController::class, 'friends'])->name('api.friends');
+
+    // Posts (group owner stories)
+    Route::get('/posts', [PostController::class, 'index'])->name('api.posts.index');
+    Route::post('/posts', [PostController::class, 'store'])->name('api.posts.store');
+    Route::post('/posts/{post}/like', [PostController::class, 'toggleLike'])->name('api.posts.like');
+    Route::get('/posts/{post}/comments', [PostController::class, 'comments'])->name('api.posts.comments');
+    Route::post('/posts/{post}/comments', [PostController::class, 'addComment'])->name('api.posts.comment');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('api.posts.destroy');
 });
