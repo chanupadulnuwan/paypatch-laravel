@@ -26,11 +26,16 @@ class ApiController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
+            'email'    => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $login = trim($request->email);
+
+        // Allow login with email or username
+        $user = User::where('email', strtolower($login))
+            ->orWhere('username', $login)
+            ->first();
 
         if (!$user || !password_verify($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
@@ -572,20 +577,79 @@ class ApiController extends Controller
             }
         }
 
-        $friends = collect($balanceMap)->map(function ($balance, $id) use ($request) {
+        // Build per-friend currency map (use first group's currency as dominant)
+        $currencyMap = [];
+        foreach ($groups as $group) {
+            foreach ($group->members as $member) {
+                if ($member->id !== $userId && !isset($currencyMap[$member->id])) {
+                    $currencyMap[$member->id] = $group->currency ?? 'LKR';
+                }
+            }
+        }
+
+        $friends = collect($balanceMap)->map(function ($balance, $id) use ($currencyMap) {
             $user = User::find($id);
+            $photoUrl = null;
+            if ($user && $user->profile_photo_path && !str_starts_with($user->profile_photo_path, 'preset:')) {
+                $photoUrl = url($user->profile_photo_path);
+            }
 
             return $user ? [
                 'user_id'           => $user->id,
                 'name'              => $user->name,
+                'username'          => $user->username,
                 'email'             => $user->email,
-                'profile_photo_url' => $user->profile_photo_url,
+                'profile_photo_url' => $photoUrl,
                 'balance'           => round($balance, 2),
+                'currency'          => $currencyMap[$id] ?? 'LKR',
                 'status'            => $balance > 0 ? 'owes_you' : ($balance < 0 ? 'you_owe' : 'settled'),
             ] : null;
         })->filter()->values();
 
         return response()->json(['friends' => $friends]);
+    }
+
+    public function getActivity(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $logs = ActivityLog::where('user_id', $userId)
+            ->with('group')
+            ->orderByDesc('created_at')
+            ->limit(100)
+            ->get();
+
+        $activity = $logs->map(function ($log) {
+            return [
+                'id'         => $log->id,
+                'message'    => $log->message,
+                'type'       => $log->type,
+                'group_name' => $log->group?->name,
+                'group_id'   => $log->group_id,
+                'created_at' => optional($log->created_at)->toDateTimeString(),
+            ];
+        });
+
+        return response()->json(['activity' => $activity]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password'     => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!password_verify($request->current_password, $user->password)) {
+            return response()->json(['message' => 'Current password is incorrect.'], 422);
+        }
+
+        $user->password = $request->new_password;
+        $user->save();
+
+        return response()->json(['message' => 'Password changed successfully.']);
     }
 
     public function storeSettlement(Request $request, Group $group)
@@ -607,15 +671,32 @@ class ApiController extends Controller
             'amount'       => $request->amount,
         ]);
 
-        $fromUser = User::find($request->from_user_id);
-        $toUser   = User::find($request->to_user_id);
+        $fromUser   = User::find($request->from_user_id);
+        $toUser     = User::find($request->to_user_id);
+        $currentId  = $request->user()->id;
+        $otherUserId = $currentId === (int)$request->from_user_id
+            ? (int)$request->to_user_id
+            : (int)$request->from_user_id;
 
+        $settlementMsg = ($fromUser->name ?? 'User') . ' settled up with ' . ($toUser->name ?? 'User') . ' in "' . $group->name . '".';
+
+        // Log for current user
         ActivityLog::create([
             'group_id' => $group->id,
-            'user_id'  => $request->user()->id,
-            'message'  => ($fromUser->name ?? 'User') . ' settled up with ' . ($toUser->name ?? 'User') . '.',
+            'user_id'  => $currentId,
+            'message'  => $settlementMsg,
             'type'     => 'settlement',
         ]);
+
+        // Also notify the other party
+        if ($otherUserId && $otherUserId !== $currentId) {
+            ActivityLog::create([
+                'group_id' => $group->id,
+                'user_id'  => $otherUserId,
+                'message'  => $settlementMsg,
+                'type'     => 'settlement',
+            ]);
+        }
 
         return response()->json(['message' => 'Settlement recorded.'], 201);
     }

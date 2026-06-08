@@ -18,6 +18,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/match-phones', [ApiController::class, 'matchByPhone'])->name('api.users.matchPhones');
     Route::post('/profile/update', [ApiController::class, 'updateProfile'])->name('api.profile.update');
     Route::get('/profile', [ApiController::class, 'getProfile'])->name('api.profile.get');
+    Route::get('/activity', [ApiController::class, 'getActivity'])->name('api.activity');
+    Route::post('/change-password', [ApiController::class, 'changePassword'])->name('api.changePassword');
 
     Route::get('/groups', [ApiController::class, 'groups'])->name('api.groups.index');
     Route::post('/groups', [ApiController::class, 'storeGroup'])->name('api.groups.store');
