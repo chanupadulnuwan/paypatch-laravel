@@ -15,7 +15,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -918,5 +920,89 @@ class ApiController extends Controller
 
             return 325.40;
         });
+    }
+
+    // ── OTP ─────────────────────────────────────────────────────────────────
+
+    public function sendOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $otp = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        Cache::put('otp_' . md5($request->email), Hash::make($otp), now()->addMinutes(10));
+
+        try {
+            Mail::raw(
+                "Your PayPatch verification code is: {$otp}\n\nThis code expires in 10 minutes.\nIf you did not request this, ignore this email.",
+                function ($message) use ($request) {
+                    $message->to($request->email)->subject('PayPatch Email Verification');
+                }
+            );
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to send email. Check your mail configuration.'], 500);
+        }
+
+        return response()->json(['message' => 'Verification code sent.']);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|string|size:6',
+        ]);
+
+        $key       = 'otp_' . md5($request->email);
+        $hashedOtp = Cache::get($key);
+
+        if (!$hashedOtp || !Hash::check($request->otp, $hashedOtp)) {
+            return response()->json(['message' => 'Invalid or expired code. Please request a new one.'], 422);
+        }
+
+        Cache::forget($key);
+
+        return response()->json(['message' => 'OTP verified.']);
+    }
+
+    // ── Google OAuth ─────────────────────────────────────────────────────────
+
+    public function googleAuth(Request $request)
+    {
+        $request->validate(['id_token' => 'required|string']);
+
+        $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+            'id_token' => $request->id_token,
+        ]);
+
+        if (!$response->successful()) {
+            return response()->json(['message' => 'Invalid Google token.'], 401);
+        }
+
+        $payload       = $response->json();
+        $email         = $payload['email'] ?? null;
+        $emailVerified = ($payload['email_verified'] ?? 'false') === 'true';
+        $name          = $payload['name'] ?? 'Google User';
+
+        if (!$email || !$emailVerified) {
+            return response()->json(['message' => 'Could not verify Google account.'], 401);
+        }
+
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            [
+                'name'              => $name,
+                'password'          => Hash::make(Str::random(32)),
+                'country'           => 'Unknown',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $token = $user->createToken('google-auth')->plainTextToken;
+
+        return response()->json([
+            'token' => $token,
+            'user'  => $this->serializeAuthUser($user),
+        ]);
     }
 }

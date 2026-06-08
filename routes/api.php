@@ -12,6 +12,18 @@ Route::post('/register', [ApiController::class, 'register'])
     ->middleware('throttle:5,1')
     ->name('api.register');
 
+Route::post('/otp/send', [ApiController::class, 'sendOtp'])
+    ->middleware('throttle:5,1')
+    ->name('api.otp.send');
+
+Route::post('/otp/verify', [ApiController::class, 'verifyOtp'])
+    ->middleware('throttle:10,1')
+    ->name('api.otp.verify');
+
+Route::post('/auth/google', [ApiController::class, 'googleAuth'])
+    ->middleware('throttle:5,1')
+    ->name('api.auth.google');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/logout', [ApiController::class, 'logout'])->name('api.logout');
     Route::get('/exchange-rates/usd-lkr', [ApiController::class, 'usdLkrRate'])->name('api.exchange.usdLkr');
