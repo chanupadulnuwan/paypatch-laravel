@@ -757,12 +757,20 @@ class ApiController extends Controller
         }
 
         if ($group->created_by === $userId) {
-            return response()->json(['message' => 'Group owner cannot leave. Transfer ownership or delete the group.'], 403);
+            return response()->json(['message' => 'Group owner cannot leave the group.'], 403);
         }
 
         $group->members()->detach($userId);
+        Cache::forget("dashboard_groups_{$userId}");
 
-        return response()->json(['message' => 'You have left the group.']);
+        ActivityLog::create([
+            'group_id' => $group->id,
+            'user_id'  => $userId,
+            'message'  => $request->user()->name . ' left the group "' . $group->name . '".',
+            'type'     => 'group',
+        ]);
+
+        return response()->json(['message' => 'Left group successfully.']);
     }
 
     private function prepareGroup(Group $group, int $userId): Group
