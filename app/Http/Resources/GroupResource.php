@@ -38,6 +38,13 @@ class GroupResource extends JsonResource
             'cover_image_url'   => $coverUrl,
             'cover_image_preset'=> $coverPreset,
             'profile_image_url' => $this->profile_image_path ? url($this->profile_image_path) : null,
+            'settlements'       => $this->whenLoaded('settlements', function () {
+                return $this->settlements->map(fn ($s) => [
+                    'from_user_id' => (int) $s->from_user_id,
+                    'to_user_id'   => (int) $s->to_user_id,
+                    'amount'       => (float) $s->amount,
+                ])->values();
+            }),
             'expenses'          => $this->whenLoaded('expenses', function () use ($currentUserId) {
                 return $this->expenses->map(function ($expense) use ($currentUserId) {
                     return [

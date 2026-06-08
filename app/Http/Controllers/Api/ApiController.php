@@ -763,7 +763,7 @@ class ApiController extends Controller
         $sent     = $group->settlements->where('from_user_id', $userId)->sum('amount');
         $received = $group->settlements->where('to_user_id', $userId)->sum('amount');
 
-        return round($paid - $share - $sent + $received, 2);
+        return round($paid - $share + $sent - $received, 2);
     }
 
     private function normalizeMemberIds(Request $request): array
