@@ -940,7 +940,7 @@ class ApiController extends Controller
                 }
             );
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to send email. Check your mail configuration.'], 500);
+            return response()->json(['message' => 'Failed to send email: ' . $e->getMessage()], 500);
         }
 
         return response()->json(['message' => 'Verification code sent.']);

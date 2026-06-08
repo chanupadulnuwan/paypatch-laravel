@@ -8,7 +8,7 @@ use App\Models\PostComment;
 use App\Models\PostLike;
 use App\Models\Group;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -60,16 +60,25 @@ class PostController extends Controller
         $user  = $request->user();
         $group = Group::findOrFail($request->group_id);
 
-        if ((int) $group->created_by !== $user->id) {
-            return response()->json(['message' => 'Only the group owner can share posts.'], 403);
+        if (!$group->members()->where('users.id', $user->id)->exists()) {
+            return response()->json(['message' => 'You must be a member of this group to share a post.'], 403);
         }
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $file     = $request->file('image');
-            $filename = 'post_' . uniqid() . '.' . $file->extension();
-            $file->storeAs('public/posts', $filename);
-            $imagePath = 'storage/posts/' . $filename;
+            try {
+                $file      = $request->file('image');
+                $uploadDir = public_path('assets/uploads/posts');
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $filename  = 'post_' . now()->timestamp . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
+                $file->move($uploadDir, $filename);
+                $imagePath = 'assets/uploads/posts/' . $filename;
+            } catch (\Exception $e) {
+                // Image storage failed — continue without image
+                $imagePath = null;
+            }
         }
 
         $post = GroupPost::create([
@@ -174,8 +183,10 @@ class PostController extends Controller
         }
 
         if ($post->image_path) {
-            $storagePath = str_replace('storage/', 'public/', $post->image_path);
-            Storage::delete($storagePath);
+            $fullPath = public_path($post->image_path);
+            if (file_exists($fullPath)) {
+                @unlink($fullPath);
+            }
         }
 
         $post->delete();
