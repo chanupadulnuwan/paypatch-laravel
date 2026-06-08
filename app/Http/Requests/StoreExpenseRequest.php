@@ -38,7 +38,10 @@ class StoreExpenseRequest extends FormRequest
             'title'         => ['required', 'string', 'max:255'],
             'amount'        => ['required', 'numeric', 'min:0.01'],
             'paid_by'       => ['required', 'integer', 'exists:users,id'],
-            'receipt_image' => ['nullable', 'image', 'max:4096'],
+            'receipt_image'     => ['nullable', 'image', 'max:4096'],
+            'location'          => ['nullable', 'string', 'max:100'],
+            'split_member_ids'  => ['nullable', 'array'],
+            'split_member_ids.*'=> ['integer', 'exists:users,id'],
         ];
     }
 

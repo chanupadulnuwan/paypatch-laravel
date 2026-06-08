@@ -18,6 +18,7 @@ class Expense extends Model
         'amount',
         'split_type',
         'receipt_image_path',
+        'location',
     ];
 
     // ─── ACCESSOR ────────────────────────────────────────────────────────────

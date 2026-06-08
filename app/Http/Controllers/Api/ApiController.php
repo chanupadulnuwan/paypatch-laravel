@@ -213,7 +213,7 @@ class ApiController extends Controller
 
         $groups = Group::forUser($userId)
             ->withCount('members')
-            ->with(['expenses.shares', 'settlements', 'creator'])
+            ->with(['expenses.shares.user', 'settlements', 'creator'])
             ->latest()
             ->paginate(15);
 
@@ -305,7 +305,7 @@ class ApiController extends Controller
 
         $group->load([
             'members',
-            'expenses.shares',
+            'expenses.shares.user',
             'expenses.paidBy',
             'expenses.createdBy',
             'settlements',
@@ -474,23 +474,33 @@ class ApiController extends Controller
         $receiptPath = $this->storeUploadedImage($request, 'receipt_image', 'receipts', 'receipt');
 
         $expense = DB::transaction(function () use ($request, $group, $receiptPath) {
+            $splitMemberIds = $request->input('split_member_ids');
+            $isCustomSplit  = !empty($splitMemberIds) && is_array($splitMemberIds);
+
             $expense = Expense::create([
-                'group_id'          => $group->id,
-                'paid_by'           => $request->paid_by,
-                'created_by'        => $request->user()->id,
-                'title'             => $request->title,
-                'amount'            => $request->amount,
-                'split_type'        => 'equal',
+                'group_id'           => $group->id,
+                'paid_by'            => $request->paid_by,
+                'created_by'         => $request->user()->id,
+                'title'              => $request->title,
+                'amount'             => $request->amount,
+                'split_type'         => $isCustomSplit ? 'custom' : 'equal',
                 'receipt_image_path' => $receiptPath,
+                'location'           => $request->input('location'),
             ]);
 
-            $members     = $group->members;
-            $count       = $members->count();
+            if ($isCustomSplit) {
+                $splitMembers = $group->members->whereIn('id', $splitMemberIds);
+                $count        = $splitMembers->count() ?: 1;
+            } else {
+                $splitMembers = $group->members;
+                $count        = $splitMembers->count();
+            }
+
             $shareAmount = floor(((float) $request->amount / $count) * 100) / 100;
             $remainder   = round((float) $request->amount - ($shareAmount * $count), 2);
 
-            foreach ($members as $index => $member) {
-                ExpenseShare::create([
+            foreach ($splitMembers->values() as $index => $member) {
+                \App\Models\ExpenseShare::create([
                     'expense_id'   => $expense->id,
                     'user_id'      => $member->id,
                     'share_amount' => $index === 0 ? $shareAmount + $remainder : $shareAmount,
@@ -619,6 +629,11 @@ class ApiController extends Controller
             ->limit(100)
             ->get();
 
+        // Mark all fetched logs as read
+        ActivityLog::where('user_id', $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
         $activity = $logs->map(function ($log) {
             return [
                 'id'         => $log->id,
@@ -631,6 +646,15 @@ class ApiController extends Controller
         });
 
         return response()->json(['activity' => $activity]);
+    }
+
+    public function getUnreadCount(Request $request)
+    {
+        $count = ActivityLog::where('user_id', $request->user()->id)
+            ->where('is_read', false)
+            ->count();
+
+        return response()->json(['unread_count' => $count]);
     }
 
     public function changePassword(Request $request)

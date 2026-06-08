@@ -58,6 +58,15 @@ class GroupResource extends JsonResource
                         'can_delete'        => $currentUserId !== null && (int) $expense->created_by === (int) $currentUserId,
                         'receipt_image_url' => $expense->receipt_image_path ? url($expense->receipt_image_path) : null,
                         'created_at'        => optional($expense->created_at)->toDateTimeString(),
+                        'location'          => $expense->location,
+                        'split_type'        => $expense->split_type ?? 'equal',
+                        'split_members'     => $expense->relationLoaded('shares')
+                            ? $expense->shares->map(fn ($s) => [
+                                'user_id' => $s->user_id,
+                                'name'    => $s->user?->name ?? 'User',
+                                'share'   => (float) $s->share_amount,
+                            ])->values()
+                            : [],
                     ];
                 })->values();
             }),

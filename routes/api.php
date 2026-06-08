@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile/update', [ApiController::class, 'updateProfile'])->name('api.profile.update');
     Route::get('/profile', [ApiController::class, 'getProfile'])->name('api.profile.get');
     Route::get('/activity', [ApiController::class, 'getActivity'])->name('api.activity');
+    Route::get('/activity/unread-count', [ApiController::class, 'getUnreadCount'])->name('api.activity.unreadCount');
     Route::post('/change-password', [ApiController::class, 'changePassword'])->name('api.changePassword');
 
     Route::get('/groups', [ApiController::class, 'groups'])->name('api.groups.index');
