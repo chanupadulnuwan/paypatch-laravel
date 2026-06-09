@@ -52,6 +52,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/groups/{group}/leave', [ApiController::class, 'leaveGroup'])->name('api.groups.leave.delete');
 
     Route::get('/friends', [ApiController::class, 'friends'])->name('api.friends');
+    Route::post('/friends/invite', [ApiController::class, 'inviteFriend'])->name('api.friends.invite');
+    Route::post('/friends/{id}/accept', [ApiController::class, 'acceptFriendRequest'])->name('api.friends.accept');
+    Route::post('/friends/{id}/decline', [ApiController::class, 'declineFriendRequest'])->name('api.friends.decline');
 
     // Posts (group owner stories)
     Route::get('/posts', [PostController::class, 'index'])->name('api.posts.index');

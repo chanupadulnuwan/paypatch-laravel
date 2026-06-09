@@ -556,6 +556,92 @@ class ApiController extends Controller
         return response()->json(['message' => 'Expense deleted successfully.']);
     }
 
+    public function inviteFriend(Request $request)
+    {
+        $request->validate(['user_id' => 'required|integer|exists:users,id']);
+
+        $senderId    = $request->user()->id;
+        $recipientId = (int) $request->user_id;
+
+        if ($senderId === $recipientId) {
+            return response()->json(['message' => 'You cannot add yourself.'], 400);
+        }
+
+        $existing = \App\Models\Friendship::where(function ($q) use ($senderId, $recipientId) {
+            $q->where('user_id', $senderId)->where('friend_id', $recipientId);
+        })->orWhere(function ($q) use ($senderId, $recipientId) {
+            $q->where('user_id', $recipientId)->where('friend_id', $senderId);
+        })->first();
+
+        if ($existing) {
+            $msg = match ($existing->status) {
+                'accepted' => 'You are already friends.',
+                'pending'  => 'A friend request is already pending.',
+                default    => 'A request already exists.',
+            };
+            return response()->json(['message' => $msg], 400);
+        }
+
+        $friendship = \App\Models\Friendship::create([
+            'user_id'   => $senderId,
+            'friend_id' => $recipientId,
+            'status'    => 'pending',
+        ]);
+
+        ActivityLog::create([
+            'user_id'            => $recipientId,
+            'type'               => 'friend_request',
+            'message'            => $request->user()->name . ' sent you a friend request.',
+            'request_to_user_id' => $senderId,
+        ]);
+
+        return response()->json([
+            'message'       => 'Friend request sent.',
+            'friendship_id' => $friendship->id,
+        ], 201);
+    }
+
+    public function acceptFriendRequest(Request $request, $id)
+    {
+        $userId     = $request->user()->id;
+        $friendship = \App\Models\Friendship::where('id', $id)
+            ->where('friend_id', $userId)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$friendship) {
+            return response()->json(['message' => 'Friend request not found.'], 404);
+        }
+
+        $friendship->update(['status' => 'accepted']);
+
+        ActivityLog::create([
+            'user_id'            => $friendship->user_id,
+            'type'               => 'friend_accepted',
+            'message'            => $request->user()->name . ' accepted your friend request.',
+            'request_to_user_id' => $userId,
+        ]);
+
+        return response()->json(['message' => 'Friend request accepted.']);
+    }
+
+    public function declineFriendRequest(Request $request, $id)
+    {
+        $userId     = $request->user()->id;
+        $friendship = \App\Models\Friendship::where('id', $id)
+            ->where('friend_id', $userId)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$friendship) {
+            return response()->json(['message' => 'Friend request not found.'], 404);
+        }
+
+        $friendship->update(['status' => 'declined']);
+
+        return response()->json(['message' => 'Friend request declined.']);
+    }
+
     public function friends(Request $request)
     {
         $userId = $request->user()->id;
@@ -599,6 +685,19 @@ class ApiController extends Controller
             }
         }
 
+        // Also include direct friends from accepted friendship requests
+        $directFriendIds = \App\Models\Friendship::where(function ($q) use ($userId) {
+            $q->where('user_id', $userId)->orWhere('friend_id', $userId);
+        })->where('status', 'accepted')->get()->map(function ($f) use ($userId) {
+            return $f->user_id === $userId ? $f->friend_id : $f->user_id;
+        });
+
+        foreach ($directFriendIds as $fid) {
+            if (!isset($balanceMap[$fid])) {
+                $balanceMap[$fid] = 0;
+            }
+        }
+
         $friends = collect($balanceMap)->map(function ($balance, $id) use ($currencyMap) {
             $user = User::find($id);
             $photoUrl = null;
@@ -637,7 +736,7 @@ class ApiController extends Controller
             ->update(['is_read' => true]);
 
         $activity = $logs->map(function ($log) {
-            return [
+            $data = [
                 'id'         => $log->id,
                 'message'    => $log->message,
                 'type'       => $log->type,
@@ -645,6 +744,24 @@ class ApiController extends Controller
                 'group_id'   => $log->group_id,
                 'created_at' => optional($log->created_at)->toDateTimeString(),
             ];
+
+            if ($log->type === 'friend_request' && $log->request_to_user_id) {
+                $friendship = \App\Models\Friendship::where('user_id', $log->request_to_user_id)
+                    ->where('friend_id', $log->user_id)
+                    ->first();
+                $sender   = User::find($log->request_to_user_id);
+                $photoUrl = null;
+                if ($sender && $sender->profile_photo_path && !str_starts_with($sender->profile_photo_path, 'preset:')) {
+                    $photoUrl = url($sender->profile_photo_path);
+                }
+                $data['friendship_id']     = $friendship?->id;
+                $data['friendship_status'] = $friendship?->status;
+                $data['from_user_id']      = $log->request_to_user_id;
+                $data['from_user_name']    = $sender?->name;
+                $data['from_user_photo']   = $photoUrl;
+            }
+
+            return $data;
         });
 
         return response()->json(['activity' => $activity]);
@@ -844,6 +961,7 @@ class ApiController extends Controller
         return [
             'id'                => $user->id,
             'name'              => $user->name,
+            'username'          => $user->username,
             'email'             => $user->email,
             'profile_photo_url' => $user->profile_photo_url,
             'is_owner'          => $group ? $group->created_by === $user->id : false,
