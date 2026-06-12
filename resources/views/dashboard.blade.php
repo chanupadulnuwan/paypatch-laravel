@@ -7,10 +7,10 @@
 
     <title>PayPatch — Dashboard</title>
 
-    <!-- Google Fonts for Premium Pairings -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     <!-- Styles / Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -20,17 +20,74 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'DM Sans', sans-serif;
+            font-optical-sizing: auto;
+        }
+        .heading-display {
+            font-family: 'Fraunces', serif;
+            font-optical-sizing: auto;
         }
         .heading-serif {
-            font-family: 'Lora', serif;
+            font-family: 'Fraunces', serif;
+            font-optical-sizing: auto;
         }
         .heading-font {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
         }
+
+        /* Entrance animations */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-1 { animation: slideUpFade 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-2 { animation: slideUpFade 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-3 { animation: slideUpFade 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-fade-in { animation: fadeIn 0.5s ease both; }
+        .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-count { animation: countUp 0.8s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+        /* Card hover lift */
+        .card-lift { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(108,58,244,0.12); }
+
+        /* Button shimmer */
+        .btn-shimmer {
+            background: linear-gradient(90deg, #6C3AF4, #B026F3, #6C3AF4);
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+
+        /* Nav link underline animation */
+        .nav-underline { position: relative; }
+        .nav-underline::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #6C3AF4; transition: width 0.3s ease; border-radius: 2px; }
+        .nav-underline:hover::after { width: 100%; }
     </style>
 </head>
-<body class="h-full flex overflow-hidden bg-[#F8F9FD] text-[#1A103C]" 
+<body class="h-full flex overflow-hidden text-[#1A103C]"
+      style="background-image: url('/assets/park-bg.png'); background-size: cover; background-position: center; background-attachment: fixed;" 
       x-data="{ 
           profileOpen: {{ session('modal') === 'profile' ? 'true' : 'false' }}, 
           showNewGroupModal: false 
@@ -136,7 +193,7 @@
                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path>
                          </svg>
                      </button>
-                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C]">My Account</h3>
+                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight">My Account</h3>
                  </div>
                  <form method="POST" action="{{ route('logout') }}">
                      @csrf
@@ -316,7 +373,7 @@
     </aside>
 
     <!-- ==================== MAIN CONTENT WORKSPACE ==================== -->
-    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full">
+    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full bg-white/65 backdrop-blur-sm">
         
         <!-- ==================== HEADER ROW ==================== -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -357,8 +414,8 @@
                 </button>
 
                 <!-- New Group CTA Button -->
-                <button @click="showNewGroupModal = true" 
-                        class="flex-shrink-0 px-6 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-2xl font-bold text-sm shadow-lg shadow-purple-500/10 transition transform active:scale-97 flex items-center gap-1.5 outline-none whitespace-nowrap">
+                <button @click="showNewGroupModal = true"
+                        class="flex-shrink-0 px-7 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 outline-none whitespace-nowrap heading-font">
                     <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
                     </svg>
@@ -370,16 +427,16 @@
         <!-- ==================== SUMMARY CARDS ROW ==================== -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- 1. YOU OWE -->
-            <div class="bg-[#FFF0F0] border border-red-200/30 rounded-3xl p-6 flex justify-between items-start shadow-sm shadow-red-950/2">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 flex justify-between items-start shadow-lg card-lift animate-slide-up">
                 <div class="flex flex-col gap-1">
-                    <span class="text-slate-500 text-xs font-bold uppercase tracking-wider">You owe</span>
-                    <h3 class="heading-font text-3xl font-extrabold text-[#E63946] mt-1.5">
+                    <span class="text-slate-500 text-xs font-bold uppercase tracking-wider heading-font">You owe</span>
+                    <h3 class="heading-font text-3xl font-extrabold text-[#E63946] mt-1.5 animate-count">
                         Rs. {{ number_format($youOwe, 2) }}
                     </h3>
                     <span class="text-xs text-slate-500 font-semibold mt-2.5">Across {{ $groupsYouOweCount }} {{ Str::plural('group', $groupsYouOweCount) }}</span>
                 </div>
-                <!-- Red Diagonal Arrow -->
-                <div class="h-10 w-10 bg-red-100 flex items-center justify-center rounded-full text-[#E63946]">
+                <!-- Purple Diagonal Arrow -->
+                <div class="h-10 w-10 bg-[#6C3AF4]/10 flex items-center justify-center rounded-full text-[#6C3AF4]">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"></path>
                     </svg>
@@ -387,16 +444,16 @@
             </div>
 
             <!-- 2. YOU ARE OWED -->
-            <div class="bg-[#F0FFF4] border border-emerald-200/30 rounded-3xl p-6 flex justify-between items-start shadow-sm shadow-emerald-950/2">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 flex justify-between items-start shadow-lg card-lift animate-slide-up-delay-1">
                 <div class="flex flex-col gap-1">
-                    <span class="text-slate-500 text-xs font-bold uppercase tracking-wider">You are owed</span>
-                    <h3 class="heading-font text-3xl font-extrabold text-[#10B981] mt-1.5">
+                    <span class="text-slate-500 text-xs font-bold uppercase tracking-wider heading-font">You are owed</span>
+                    <h3 class="heading-font text-3xl font-extrabold text-[#10B981] mt-1.5 animate-count">
                         Rs. {{ number_format($youAreOwed, 2) }}
                     </h3>
                     <span class="text-xs text-slate-500 font-semibold mt-2.5">Across {{ $groupsYouAreOwedCount }} {{ Str::plural('group', $groupsYouAreOwedCount) }}</span>
                 </div>
                 <!-- Green Down-Diagonal Arrow -->
-                <div class="h-10 w-10 bg-emerald-100 flex items-center justify-center rounded-full text-[#10B981]">
+                <div class="h-10 w-10 bg-[#10B981]/10 flex items-center justify-center rounded-full text-[#10B981]">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 4.5l-15 15m0 0h11.25m-11.25 0V8.25"></path>
                     </svg>
@@ -404,7 +461,7 @@
             </div>
 
             <!-- 3. EXCHANGE RATE & CHART -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 flex justify-between items-start shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 flex justify-between items-start shadow-lg card-lift animate-slide-up-delay-2">
                 <div class="flex flex-col gap-1 w-2/3">
                     <span class="text-slate-500 text-xs font-bold uppercase tracking-wider">Today's Dollar Rate</span>
                     <h3 class="heading-font text-xl md:text-[1.35rem] font-extrabold text-[#1A103C] mt-2.5">
@@ -435,9 +492,9 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             <!-- LEFT COLUMN: YOUR GROUPS -->
-            <section class="lg:col-span-7 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+            <section class="lg:col-span-7 bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift animate-slide-up-delay-1">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="heading-font text-lg font-extrabold text-[#1A103C]">Your Groups</h2>
+                    <h2 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight tracking-tight">Your Groups</h2>
                     <a href="{{ route('groups.index') }}" class="text-[#6C3AF4] hover:text-[#592BD4] text-xs font-bold tracking-wide">View all</a>
                 </div>
 
@@ -462,15 +519,15 @@
                                 ];
                                 $grad = $gradients[strlen($group->name) % count($gradients)];
                             @endphp
-                            <a href="{{ route('groups.show', $group) }}" 
-                               class="flex items-center justify-between p-3.5 hover:bg-[#F8F9FD] border border-transparent hover:border-slate-100 rounded-2xl transition">
+                            <a href="{{ route('groups.show', $group) }}"
+                               class="flex items-center justify-between p-3.5 hover:bg-[#6C3AF4]/4 border border-transparent hover:border-[#6C3AF4]/10 rounded-2xl transition-all duration-200 group">
                                 <div class="flex items-center gap-4">
                                     <!-- Beautiful Mockup Circular Avatar Gradient -->
                                     <div class="h-12 w-12 rounded-full bg-gradient-to-tr {{ $grad }} flex items-center justify-center text-white font-extrabold text-lg shadow-sm">
                                         {{ strtoupper(substr($group->name, 0, 1)) }}
                                     </div>
                                     <div>
-                                        <h3 class="font-extrabold text-sm text-[#1A103C]">{{ $group->name }}</h3>
+                                        <h3 class="heading-font font-bold text-sm text-[#1A103C] group-hover:text-[#6C3AF4] transition-colors">{{ $group->name }}</h3>
                                         <p class="text-xs font-bold mt-1">
                                             @if($balance > 0)
                                                 <span class="text-[#10B981]">You are owed Rs. {{ number_format($balance, 2) }}</span>
@@ -483,12 +540,11 @@
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-4">
-                                    <div class="text-right">
-                                        <span class="text-xs font-bold text-[#1A103C]">Rs. {{ number_format($group->total_expenses, 2) }}</span>
-                                        <p class="text-[10px] font-semibold text-slate-400">Total expenses</p>
-                                    </div>
-                                    <svg class="h-4.5 w-4.5 text-slate-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <div class="flex items-center gap-3 flex-shrink-0">
+                                    <span class="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100/80 text-[11px] font-bold text-slate-500 heading-font">
+                                        Rs.&nbsp;{{ number_format($group->total_expenses, 2) }}
+                                    </span>
+                                    <svg class="h-4 w-4 text-slate-300 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"></path>
                                     </svg>
                                 </div>
@@ -502,9 +558,9 @@
             <div class="lg:col-span-5 flex flex-col gap-6 w-full">
                 
                 <!-- 1. RECENT EXPENSES -->
-                <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <section class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift animate-slide-up-delay-2">
                     <div class="flex justify-between items-center mb-5">
-                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C]">Recent Expenses</h2>
+                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight tracking-tight">Recent Expenses</h2>
                         <a href="{{ route('activity') }}" class="text-[#6C3AF4] hover:text-[#592BD4] text-xs font-bold tracking-wide">View all</a>
                     </div>
 
@@ -540,9 +596,9 @@
                 </section>
 
                 <!-- 2. SMART SUGGESTIONS -->
-                <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <section class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift animate-slide-up-delay-3">
                     <div class="flex flex-col mb-4">
-                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C]">Suggestions</h2>
+                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight tracking-tight">Suggestions</h2>
                         <span class="text-[10px] font-semibold text-slate-400">Smart ways to settle up</span>
                     </div>
 
@@ -583,9 +639,9 @@
 
                                     <!-- Settle Action Button (Links to Group Show details) -->
                                     <div>
-                                        <a href="{{ route('groups.show', $sug['group_id']) }}" 
-                                           class="px-4 py-1.5 rounded-full text-[10px] font-bold shadow-sm transition transform hover:scale-103 active:scale-97 outline-none
-                                                  {{ $isDebtor ? 'bg-[#FFF0F0] text-[#E63946] border border-red-200/30 hover:bg-[#FFE3E3]' : 'bg-[#F0FFF4] text-[#10B981] border border-emerald-200/30 hover:bg-[#E3FFE9]' }}">
+                                        <a href="{{ route('groups.show', $sug['group_id']) }}"
+                                           class="px-5 py-2 rounded-full text-[10px] font-bold tracking-wide uppercase shadow-sm border transition-all hover:scale-105 duration-200 heading-font
+                                                  {{ $isDebtor ? 'bg-white text-[#E63946] border-red-200/60 hover:bg-red-50' : 'bg-white text-[#10B981] border-emerald-200/60 hover:bg-emerald-50' }}">
                                             Settle
                                         </a>
                                     </div>
@@ -645,12 +701,12 @@
 
                 <!-- Modal Footer Actions -->
                 <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex justify-end gap-3">
-                    <button type="button" @click="showNewGroupModal = false" 
-                            class="px-5 py-2.5 rounded-2xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 font-bold text-xs transition outline-none">
+                    <button type="button" @click="showNewGroupModal = false"
+                            class="px-7 py-2.5 rounded-full border-2 border-[#6C3AF4]/30 text-[#6C3AF4] hover:bg-[#6C3AF4]/5 font-bold text-[11px] uppercase tracking-widest transition-all duration-300 outline-none heading-font">
                         Cancel
                     </button>
-                    <button type="submit" 
-                            class="px-6 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-2xl font-bold text-xs shadow-md shadow-purple-500/10 transition outline-none">
+                    <button type="submit"
+                            class="px-7 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 outline-none heading-font">
                         Create Group
                     </button>
                 </div>

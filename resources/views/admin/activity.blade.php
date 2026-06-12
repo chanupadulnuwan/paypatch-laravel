@@ -9,22 +9,28 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .heading-font {
-            font-family: 'Outfit', sans-serif;
-        }
+        body { font-family: 'DM Sans', sans-serif; font-optical-sizing: auto; }
+        .heading-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-serif   { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-font    { font-family: 'Space Grotesk', sans-serif; }
+        @keyframes slideUpFade { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        .animate-slide-up         { animation: slideUpFade 0.55s cubic-bezier(0.16,1,0.3,1) both; }
+        .animate-slide-up-delay-1 { animation: slideUpFade 0.55s 0.1s cubic-bezier(0.16,1,0.3,1) both; }
+        .animate-fade-in          { animation: fadeIn 0.4s ease both; }
+        .card-lift { transition: all 0.28s cubic-bezier(0.16,1,0.3,1); }
+        .card-lift:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(108,58,244,0.10); }
     </style>
 </head>
-<body class="h-full flex overflow-hidden bg-[#F8F9FD] text-[#1A103C]"
+<body class="h-full flex overflow-hidden text-[#1A103C]"
+      style="background-image: url('/assets/park-bg.png'); background-size: cover; background-position: center; background-attachment: fixed;"
       x-data="{ profileOpen: false }">
 
     <!-- ==================== LEFT SIDEBAR ==================== -->
@@ -93,7 +99,7 @@
     </aside>
 
     <!-- ==================== MAIN CONTENT AREA ==================== -->
-    <main class="flex-grow flex flex-col min-w-0 overflow-hidden bg-[#F8F9FD]">
+    <main class="flex-grow flex flex-col min-w-0 overflow-hidden bg-white/65 backdrop-blur-sm">
         
         <header class="h-20 bg-white border-b border-[#1A103C]/5 flex items-center justify-between px-8 flex-shrink-0 relative z-10">
             <div>

@@ -7,10 +7,10 @@
 
     <title>PayPatch — {{ $group->name }}</title>
 
-    <!-- Google Fonts for Premium Pairings -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     <!-- Styles / Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -20,17 +20,36 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'DM Sans', sans-serif;
+            font-optical-sizing: auto;
         }
-        .heading-serif {
-            font-family: 'Lora', serif;
-        }
-        .heading-font {
-            font-family: 'Outfit', sans-serif;
-        }
+        .heading-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-serif { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-font { font-family: 'Space Grotesk', sans-serif; }
+
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-1 { animation: slideUpFade 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-2 { animation: slideUpFade 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-3 { animation: slideUpFade 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-fade-in { animation: fadeIn 0.5s ease both; }
+        .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-count { animation: countUp 0.8s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .card-lift { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(108,58,244,0.12); }
+        .nav-underline { position: relative; }
+        .nav-underline::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #6C3AF4; transition: width 0.3s ease; border-radius: 2px; }
+        .nav-underline:hover::after { width: 100%; }
     </style>
 </head>
-<body class="h-full flex overflow-hidden bg-[#F8F9FD] text-[#1A103C]" 
+<body class="h-full flex overflow-hidden text-[#1A103C]"
+      style="background-image: url('/assets/park-bg.png'); background-size: cover; background-position: center; background-attachment: fixed;" 
       x-data="{ 
           profileOpen: {{ session('modal') === 'profile' ? 'true' : 'false' }},
           activeModal: '{{ session('modal') ?? '' }}', 
@@ -179,7 +198,7 @@
                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path>
                          </svg>
                      </button>
-                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C]">My Account</h3>
+                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight">My Account</h3>
                  </div>
                  <form method="POST" action="{{ route('logout') }}">
                      @csrf
@@ -350,7 +369,7 @@
 
                  <!-- Action Button -->
                  <button type="submit" 
-                         class="mt-auto w-full py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-xl font-bold text-xs shadow-md shadow-purple-500/10 transition transform active:scale-97">
+                         class="mt-auto w-full py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300">
                      Save Settings
                  </button>
              </form>
@@ -359,7 +378,7 @@
     </aside>
 
     <!-- ==================== MAIN WORKSPACE ==================== -->
-    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full"
+    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full bg-white/65 backdrop-blur-sm"
           :style="activeModal ? 'filter: blur(10px); transform: scale(0.985); pointer-events: none; transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);' : 'transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);'">
 
         <!-- Flash alerts -->
@@ -394,7 +413,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button @click="activeModal = 'settle'; setTimeout(() => { document.getElementById('settle-to').value = '{{ $requestLog->user_id }}'; document.getElementById('settle-amt').value = '{{ $requestLog->request_amount }}'; }, 100)"
-                                    class="px-4 py-2 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white text-xs font-bold rounded-xl shadow-md hover:from-[#592BD4] hover:to-[#9E1CE0] transition transform active:scale-97 outline-none">
+                                    class="px-4 py-2 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white text-[11px] font-bold rounded-full shadow-md shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 outline-none">
                                 Settle Up
                             </button>
                         </div>
@@ -467,7 +486,7 @@
         @endphp
         <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 flex-shrink-0">
             <!-- 1. TOTAL EXPENSES -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-5 flex justify-between items-start shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-5 flex justify-between items-start shadow-lg card-lift animate-slide-up">
                 <div class="flex flex-col gap-0.5">
                     <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Total Expenses</span>
                     <h3 class="heading-font text-2xl font-extrabold text-[#1A103C] mt-1">
@@ -484,7 +503,7 @@
             </div>
 
             <!-- 2. YOU OWE -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-5 flex justify-between items-start shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-5 flex justify-between items-start shadow-lg card-lift animate-slide-up">
                 <div class="flex flex-col gap-0.5">
                     <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">You Owe</span>
                     <h3 class="heading-font text-2xl font-extrabold text-[#E63946] mt-1">
@@ -503,7 +522,7 @@
             </div>
 
             <!-- 3. YOU ARE OWED -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-5 flex justify-between items-start shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-5 flex justify-between items-start shadow-lg card-lift animate-slide-up">
                 <div class="flex flex-col gap-0.5">
                     <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">You Are Owed</span>
                     <h3 class="heading-font text-2xl font-extrabold text-[#10B981] mt-1">
@@ -522,7 +541,7 @@
             </div>
 
             <!-- 4. GROUP BALANCE -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-5 flex justify-between items-start shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-5 flex justify-between items-start shadow-lg card-lift animate-slide-up">
                 <div class="flex flex-col gap-0.5">
                     <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Group Balance</span>
                     <h3 class="heading-font text-2xl font-extrabold text-[#1A103C] mt-1">
@@ -554,9 +573,9 @@
             <div class="lg:col-span-8 flex flex-col gap-8 w-full">
                 
                 <!-- A. RECENT EXPENSES -->
-                <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <section class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C]">Recent Expenses</h2>
+                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight">Recent Expenses</h2>
                         <div class="flex items-center gap-2">
                             <!-- select menu mockup -->
                             <select class="border border-slate-200 rounded-full px-4 py-1.5 text-[10px] font-bold text-slate-500 bg-[#F8F9FD] outline-none cursor-pointer">
@@ -671,7 +690,7 @@
                 <!-- B. SETTLEMENT SUGGESTIONS -->
                 <section class="bg-white border border-[#1A103C]/8 rounded-3xl p-6 shadow-sm">
                     <div class="flex flex-col mb-4">
-                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C]">Settlement Suggestions</h2>
+                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight">Settlement Suggestions</h2>
                         <span class="text-[10px] font-semibold text-slate-400">Simplify settlements with fewer payments.</span>
                     </div>
 
@@ -714,7 +733,7 @@
                                             
                                             <!-- Dynamic Settle Button (opens settlement modal with default values!) -->
                                             <button @click="activeModal = 'settle'; setTimeout(() => { document.getElementById('settle-to').value = '{{ $toUser->id }}'; document.getElementById('settle-amt').value = '{{ $debt['amount'] }}'; }, 100)"
-                                                    class="px-5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white shadow-sm hover:from-[#592BD4] hover:to-[#9E1CE0] transition transform active:scale-97 outline-none">
+                                                    class="px-5 py-2 rounded-full text-[11px] font-bold bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white shadow-md shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 outline-none">
                                                 Settle Now
                                             </button>
                                         </div>
@@ -731,9 +750,9 @@
             <div class="lg:col-span-4 flex flex-col gap-8 w-full">
                 
                 <!-- A. MEMBERS LIST -->
-                <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+                <section class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C]">Members</h2>
+                        <h2 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight">Members</h2>
                         <span class="bg-[#6C3AF4]/10 text-[#6C3AF4] text-[10px] font-bold px-2.5 py-1 rounded-full">
                             {{ $members->count() }} members
                         </span>
@@ -789,8 +808,8 @@
                 </section>
 
                 <!-- B. QUICK ACTIONS -->
-                <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
-                    <h2 class="heading-font text-lg font-extrabold text-[#1A103C] mb-5">Quick Actions</h2>
+                <section class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift">
+                    <h2 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight mb-5">Quick Actions</h2>
 
                     <div class="flex gap-3">
                         <!-- Add Expense Trigger -->
@@ -986,7 +1005,7 @@
                 </div>
 
                 <button type="submit" 
-                        class="block w-full py-3.5 mt-4 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-xl shadow-lg shadow-[#6C3AF4]/20 transition transform active:scale-98 text-sm outline-none">
+                        class="block w-full py-3.5 mt-4 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 text-[11px] uppercase tracking-widest outline-none">
                     Save Expense
                 </button>
             </form>
@@ -1129,7 +1148,7 @@
                 </div>
 
                 <button type="submit" 
-                        class="block w-full py-3.5 mt-4 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-xl shadow-lg shadow-[#6C3AF4]/20 transition transform active:scale-98 text-sm outline-none">
+                        class="block w-full py-3.5 mt-4 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 text-[11px] uppercase tracking-widest outline-none">
                     Save Changes
                 </button>
             </form>
@@ -1222,7 +1241,7 @@
 
                     <!-- Request Settle Button (formaction points to settle request) -->
                     <button type="submit" formaction="{{ route('groups.settleRequest', $group) }}"
-                            class="block w-full py-3.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white font-bold rounded-xl shadow-lg shadow-[#6C3AF4]/15 transition transform active:scale-98 text-sm outline-none text-center">
+                            class="block w-full py-3.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white font-bold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 text-[11px] uppercase tracking-widest outline-none text-center">
                         Ask to Settle Up
                     </button>
                 </div>

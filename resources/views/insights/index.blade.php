@@ -7,10 +7,10 @@
 
     <title>PayPatch — Personal Insights</title>
 
-    <!-- Google Fonts for Premium Pairings -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     <!-- Styles / Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,17 +23,32 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'DM Sans', sans-serif;
+            font-optical-sizing: auto;
         }
-        .heading-serif {
-            font-family: 'Lora', serif;
-        }
-        .heading-font {
-            font-family: 'Outfit', sans-serif;
-        }
+        .heading-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-serif { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-font { font-family: 'Space Grotesk', sans-serif; }
+
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-1 { animation: slideUpFade 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-2 { animation: slideUpFade 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-fade-in { animation: fadeIn 0.5s ease both; }
+        .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-count { animation: countUp 0.8s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .card-lift { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(108,58,244,0.12); }
+        .nav-underline { position: relative; }
+        .nav-underline::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #6C3AF4; transition: width 0.3s ease; border-radius: 2px; }
+        .nav-underline:hover::after { width: 100%; }
     </style>
 </head>
-<body class="h-full flex overflow-hidden bg-[#F8F9FD] text-[#1A103C]" 
+<body class="h-full flex overflow-hidden text-[#1A103C]"
+      style="background-image: url('/assets/park-bg.png'); background-size: cover; background-position: center; background-attachment: fixed;" 
       x-data="{ 
           profileOpen: {{ session('modal') === 'profile' ? 'true' : 'false' }} 
       }">
@@ -138,7 +153,7 @@
                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path>
                          </svg>
                      </button>
-                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C]">My Account</h3>
+                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight">My Account</h3>
                  </div>
                  <form method="POST" action="{{ route('logout') }}">
                      @csrf
@@ -302,12 +317,12 @@
     </aside>
 
     <!-- ==================== MAIN CONTENT WORKSPACE ==================== -->
-    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full">
+    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full bg-white/65 backdrop-blur-sm">
         
         <!-- ==================== HEADER ROW ==================== -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
-                <h1 class="heading-serif text-3xl md:text-[2.1rem] font-bold text-[#1A103C]">
+                <h1 class="heading-serif text-3xl md:text-[2.1rem] font-bold text-[#1A103C] animate-slide-up">
                     Personal Insights
                 </h1>
                 <p class="text-slate-500 font-medium text-sm mt-1">Deep analysis of your spending splits, balances, and top networks.</p>
@@ -386,7 +401,7 @@
         <!-- ==================== ANALYTICS CHARTS GRID ==================== -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-8">
             <!-- Spending Trend line chart -->
-            <section class="lg:col-span-7 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+            <section class="lg:col-span-7 bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h2 class="heading-font text-base font-extrabold text-[#1A103C]">Monthly Spending Trend</h2>
@@ -399,7 +414,7 @@
             </section>
 
             <!-- Group breakdown doughnut chart -->
-            <section class="lg:col-span-5 bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+            <section class="lg:col-span-5 bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift">
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h2 class="heading-font text-base font-extrabold text-[#1A103C]">Spending by Group</h2>
@@ -421,7 +436,7 @@
         <!-- ==================== PEER BALANCES GRID ==================== -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <!-- Debtors (Who owes you) -->
-            <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+            <section class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift">
                 <h3 class="heading-font text-base font-bold text-[#1A103C] mb-4 flex items-center gap-2">
                     <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                     Who Owes You (Top Debtors)
@@ -453,7 +468,7 @@
             </section>
 
             <!-- Creditors (Who you owe) -->
-            <section class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm">
+            <section class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift">
                 <h3 class="heading-font text-base font-bold text-[#1A103C] mb-4 flex items-center gap-2">
                     <span class="h-2 w-2 rounded-full bg-rose-500"></span>
                     Who You Owe (Top Creditors)
@@ -488,25 +503,25 @@
         <!-- ==================== KEY RECORDS ROW ==================== -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Average split share -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift flex items-center gap-4">
                 <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-indigo-500 flex-shrink-0">
                     📊
                 </div>
                 <div>
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Average Split share</span>
-                    <span class="heading-font text-lg font-extrabold text-[#1A103C] mt-1 block">Rs. {{ number_format($avgExpenseShare, 2) }}</span>
+                    <span class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight mt-1 block">Rs. {{ number_format($avgExpenseShare, 2) }}</span>
                     <span class="text-[9px] text-slate-400 font-semibold mt-0.5 block">Per split expense share</span>
                 </div>
             </div>
 
             <!-- Most active group -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift flex items-center gap-4">
                 <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-purple-500 flex-shrink-0">
                     ⚡
                 </div>
                 <div>
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Most Active Group</span>
-                    <span class="heading-font text-lg font-extrabold text-[#1A103C] mt-1 block truncate max-w-[180px]" title="{{ $mostActiveGroup->name ?? 'N/A' }}">
+                    <span class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight mt-1 block truncate max-w-[180px]" title="{{ $mostActiveGroup->name ?? 'N/A' }}">
                         {{ $mostActiveGroup->name ?? 'None Yet' }}
                     </span>
                     <span class="text-[9px] text-slate-400 font-semibold mt-0.5 block">
@@ -516,13 +531,13 @@
             </div>
 
             <!-- Most expensive group -->
-            <div class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex items-center gap-4">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 shadow-lg card-lift flex items-center gap-4">
                 <div class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-pink-500 flex-shrink-0">
                     💰
                 </div>
                 <div>
                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Most Expensive Group</span>
-                    <span class="heading-font text-lg font-extrabold text-[#1A103C] mt-1 block truncate max-w-[180px]" title="{{ $mostExpensiveGroup->name ?? 'N/A' }}">
+                    <span class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight mt-1 block truncate max-w-[180px]" title="{{ $mostExpensiveGroup->name ?? 'N/A' }}">
                         {{ $mostExpensiveGroup->name ?? 'None Yet' }}
                     </span>
                     <span class="text-[9px] text-slate-400 font-semibold mt-0.5 block">
@@ -571,11 +586,11 @@
                     scales: {
                         x: {
                             grid: { display: false },
-                            ticks: { font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' }, color: '#8C8BA5' }
+                            ticks: { font: { family: 'DM Sans', size: 9, weight: 'bold' }, color: '#8C8BA5' }
                         },
                         y: {
                             grid: { color: 'rgba(26, 16, 60, 0.05)', borderDash: [5, 5] },
-                            ticks: { font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' }, color: '#8C8BA5' }
+                            ticks: { font: { family: 'DM Sans', size: 9, weight: 'bold' }, color: '#8C8BA5' }
                         }
                     }
                 }
@@ -603,7 +618,7 @@
                             legend: {
                                 position: 'bottom',
                                 labels: {
-                                    font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' },
+                                    font: { family: 'DM Sans', size: 9, weight: 'bold' },
                                     boxWidth: 10,
                                     padding: 10
                                 }

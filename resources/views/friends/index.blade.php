@@ -7,10 +7,10 @@
 
     <title>PayPatch — Friends & Balances</title>
 
-    <!-- Google Fonts for Premium Pairings -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     <!-- Styles / Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -20,17 +20,31 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'DM Sans', sans-serif;
+            font-optical-sizing: auto;
         }
-        .heading-serif {
-            font-family: 'Lora', serif;
-        }
-        .heading-font {
-            font-family: 'Outfit', sans-serif;
-        }
+        .heading-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-serif { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-font { font-family: 'Space Grotesk', sans-serif; }
+
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-1 { animation: slideUpFade 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-slide-up-delay-2 { animation: slideUpFade 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .animate-fade-in { animation: fadeIn 0.5s ease both; }
+        .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .card-lift { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(108,58,244,0.12); }
+        .nav-underline { position: relative; }
+        .nav-underline::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #6C3AF4; transition: width 0.3s ease; border-radius: 2px; }
+        .nav-underline:hover::after { width: 100%; }
     </style>
 </head>
-<body class="h-full flex overflow-hidden bg-[#F8F9FD] text-[#1A103C]" 
+<body class="h-full flex overflow-hidden text-[#1A103C]"
+      style="background-image: url('/assets/park-bg.png'); background-size: cover; background-position: center; background-attachment: fixed;" 
       x-data="{ 
           profileOpen: {{ session('modal') === 'profile' ? 'true' : 'false' }},
           searchQuery: '', 
@@ -165,7 +179,7 @@
                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path>
                          </svg>
                      </button>
-                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C]">My Account</h3>
+                     <h3 class="heading-font text-lg font-extrabold text-[#1A103C] tracking-tight">My Account</h3>
                  </div>
                  <form method="POST" action="{{ route('logout') }}">
                      @csrf
@@ -344,13 +358,13 @@
     </aside>
 
     <!-- ==================== MAIN CONTENT WORKSPACE ==================== -->
-    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full">
+    <main class="flex-grow flex flex-col overflow-y-auto px-8 py-8 md:px-12 w-full max-w-full bg-white/65 backdrop-blur-sm">
         
         <!-- ==================== HEADER ROW ==================== -->
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <!-- Greeting & Subtext -->
             <div>
-                <h1 class="heading-serif text-3xl md:text-[2.1rem] font-bold text-[#1A103C]">
+                <h1 class="heading-serif text-3xl md:text-[2.1rem] font-bold text-[#1A103C] animate-slide-up">
                     Hello, {{ explode(' ', Auth::user()->name)[0] }}! 👋
                 </h1>
                 <p class="text-slate-500 font-medium text-sm mt-1">See how your friends are doing and stay updated.</p>
@@ -382,7 +396,7 @@
 
                 <!-- Invite Friends CTA -->
                 <button @click="showInviteModal = true" 
-                        class="flex-shrink-0 px-6 py-2.5 bg-[#6C3AF4] hover:bg-[#592BD4] text-white rounded-2xl font-bold text-sm shadow-lg shadow-purple-500/10 transition transform active:scale-97 flex items-center gap-1.5 outline-none whitespace-nowrap">
+                        class="flex-shrink-0 px-7 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 flex items-center gap-1.5 outline-none whitespace-nowrap heading-font">
                     <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
                     </svg>
@@ -394,7 +408,7 @@
         <!-- ==================== SUMMARY CARDS ROW ==================== -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <!-- 1. YOU OWE -->
-            <div class="bg-white border border-slate-100 rounded-3xl p-6 flex items-center gap-5 shadow-sm shadow-slate-100">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 flex items-center gap-5 shadow-lg card-lift animate-slide-up">
                 <!-- Red Arrow Circle -->
                 <div class="h-14 w-14 bg-red-50 flex items-center justify-center rounded-full text-[#E63946] flex-shrink-0">
                     <svg class="h-6 w-6 transform rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -411,7 +425,7 @@
             </div>
 
             <!-- 2. YOU ARE OWED -->
-            <div class="bg-white border border-slate-100 rounded-3xl p-6 flex items-center gap-5 shadow-sm shadow-slate-100">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 flex items-center gap-5 shadow-lg card-lift animate-slide-up">
                 <!-- Green Arrow Circle -->
                 <div class="h-14 w-14 bg-emerald-50 flex items-center justify-center rounded-full text-[#10B981] flex-shrink-0">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -428,7 +442,7 @@
             </div>
 
             <!-- 3. TOTAL FRIENDS -->
-            <div class="bg-white border border-slate-100 rounded-3xl p-6 flex items-center gap-5 shadow-sm shadow-slate-100">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl p-6 flex items-center gap-5 shadow-lg card-lift animate-slide-up">
                 <!-- Purple User Icon -->
                 <div class="h-14 w-14 bg-purple-50 flex items-center justify-center rounded-full text-[#6C3AF4] flex-shrink-0">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -449,7 +463,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
             <!-- LEFT COLUMN: YOUR FRIENDS (SPAN 2) -->
-            <div class="lg:col-span-2 bg-white border border-slate-100 rounded-3xl shadow-sm p-6">
+            <div class="lg:col-span-2 bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl shadow-lg p-6 card-lift">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="heading-font text-xl font-bold text-[#1A103C]">Your Friends</h2>
                     
@@ -534,7 +548,7 @@
             <div class="flex flex-col gap-8">
                 
                 <!-- CARD 1: FRIENDS ACTIVITY -->
-                <div class="bg-white border border-slate-100 rounded-3xl shadow-sm p-6">
+                <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl shadow-lg p-6 card-lift">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="heading-font text-base md:text-lg font-bold text-[#1A103C]">Friends Activity</h2>
                         <a href="{{ route('activity') }}" class="text-xs font-bold text-[#6C3AF4] hover:underline">View all</a>
@@ -592,7 +606,7 @@
                 </div>
 
                 <!-- CARD 2: SUGGESTIONS -->
-                <div class="bg-white border border-slate-100 rounded-3xl shadow-sm p-6">
+                <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-3xl shadow-lg p-6 card-lift">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="heading-font text-base md:text-lg font-bold text-[#1A103C]">Suggestions</h2>
                         <button @click="toastMessage = 'All recommendations are loaded below!'; toastType = 'success'; toastVisible = true; setTimeout(() => toastVisible = false, 3000);" 

@@ -7,10 +7,10 @@
 
     <title>PayPatch — Admin Dashboard</title>
 
-    <!-- Google Fonts for Premium Outfit Typography -->
+    <!-- Google Fonts — Fraunces · Space Grotesk · DM Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     <!-- Styles / Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,14 +23,44 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'DM Sans', sans-serif;
+            font-optical-sizing: auto;
         }
-        .heading-font {
-            font-family: 'Outfit', sans-serif;
+        .heading-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-serif   { font-family: 'Fraunces', serif; font-optical-sizing: auto; }
+        .heading-font    { font-family: 'Space Grotesk', sans-serif; }
+
+        /* ── Animations ── */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0);    }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0);   }
+        }
+        .animate-slide-up          { animation: slideUpFade 0.55s cubic-bezier(0.16,1,0.3,1) both; }
+        .animate-slide-up-delay-1  { animation: slideUpFade 0.55s 0.08s cubic-bezier(0.16,1,0.3,1) both; }
+        .animate-slide-up-delay-2  { animation: slideUpFade 0.55s 0.16s cubic-bezier(0.16,1,0.3,1) both; }
+        .animate-slide-up-delay-3  { animation: slideUpFade 0.55s 0.24s cubic-bezier(0.16,1,0.3,1) both; }
+        .animate-slide-up-delay-4  { animation: slideUpFade 0.55s 0.32s cubic-bezier(0.16,1,0.3,1) both; }
+        .animate-fade-in           { animation: fadeIn 0.4s ease both; }
+        .animate-count             { animation: countUp 0.7s 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+
+        /* Card hover lift */
+        .card-lift { transition: all 0.28s cubic-bezier(0.16,1,0.3,1); }
+        .card-lift:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(108,58,244,0.10); }
+
+        /* Table row pulse on hover */
+        .table-row-hover { transition: background 0.18s ease; }
+        .table-row-hover:hover { background: rgba(108,58,244,0.03); }
     </style>
 </head>
-<body class="h-full flex overflow-hidden bg-[#F8F9FD] text-[#1A103C]"
+<body class="h-full flex overflow-hidden text-[#1A103C]"
+      style="background-image: url('/assets/park-bg.png'); background-size: cover; background-position: center; background-attachment: fixed;"
       x-data="{
           profileOpen: false,
           selectedUserForView: null,
@@ -213,13 +243,13 @@
     </aside>
 
     <!-- ==================== MAIN CONTENT AREA ==================== -->
-    <main class="flex-grow flex flex-col min-w-0 overflow-hidden bg-[#F8F9FD]">
+    <main class="flex-grow flex flex-col min-w-0 overflow-hidden bg-white/65 backdrop-blur-sm">
         
         <!-- Header -->
-        <header class="h-20 bg-white border-b border-[#1A103C]/5 flex items-center justify-between px-8 flex-shrink-0 relative z-10">
+        <header class="h-20 bg-white/80 backdrop-blur-sm border-b border-white/60 flex items-center justify-between px-8 flex-shrink-0 relative z-10 animate-fade-in">
             <div>
-                <h1 class="heading-font text-2xl font-extrabold text-[#1A103C] tracking-tight">Admin Dashboard</h1>
-                <p class="text-[#8C8BA5] text-xs font-semibold mt-0.5">Manage users, groups, limits, and platform activity.</p>
+                <h1 class="heading-display text-2xl font-bold text-[#1A103C] tracking-tight">Admin Dashboard</h1>
+                <p class="text-[#8C8BA5] text-xs font-medium mt-0.5">Manage users, groups, limits, and platform activity.</p>
             </div>
 
             <!-- Header Actions -->
@@ -281,7 +311,7 @@
             @endif
 
             <!-- 1. FILTERS ROW -->
-            <div class="bg-white border border-[#1A103C]/5 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm border border-white/60 rounded-2xl p-4 flex items-center justify-between shadow-sm animate-fade-in">
                 <form method="GET" action="{{ route('admin') }}" class="flex items-center gap-4 w-full">
                     @if($search) <input type="hidden" name="search" value="{{ $search }}"> @endif
                     
@@ -324,7 +354,7 @@
             <!-- 2. FOUR STATS + ACCOUNT TYPES ROW -->
             <div class="grid grid-cols-1 xl:grid-cols-5 gap-6">
                 <!-- Stat Card 1: Total Users -->
-                <div class="bg-white border border-[#1A103C]/5 rounded-[1.5rem] p-5 shadow-sm flex flex-col justify-between h-36">
+                <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-5 shadow-lg card-lift animate-slide-up flex flex-col justify-between h-36">
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
                             <span class="text-[10px] font-bold text-[#8C8BA5] uppercase tracking-wider">Total Users</span>
@@ -343,7 +373,7 @@
                 </div>
 
                 <!-- Stat Card 2: Active Today -->
-                <div class="bg-white border border-[#1A103C]/5 rounded-[1.5rem] p-5 shadow-sm flex flex-col justify-between h-36">
+                <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-5 shadow-lg card-lift animate-slide-up-delay-1 flex flex-col justify-between h-36">
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
                             <span class="text-[10px] font-bold text-[#8C8BA5] uppercase tracking-wider">Active Today</span>
@@ -362,7 +392,7 @@
                 </div>
 
                 <!-- Stat Card 3: Banned Users -->
-                <div class="bg-white border border-[#1A103C]/5 rounded-[1.5rem] p-5 shadow-sm flex flex-col justify-between h-36">
+                <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-5 shadow-lg card-lift animate-slide-up-delay-2 flex flex-col justify-between h-36">
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
                             <span class="text-[10px] font-bold text-[#8C8BA5] uppercase tracking-wider">Banned Users</span>
@@ -381,7 +411,7 @@
                 </div>
 
                 <!-- Stat Card 4: Total Groups -->
-                <div class="bg-white border border-[#1A103C]/5 rounded-[1.5rem] p-5 shadow-sm flex flex-col justify-between h-36">
+                <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-5 shadow-lg card-lift animate-slide-up-delay-3 flex flex-col justify-between h-36">
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
                             <span class="text-[10px] font-bold text-[#8C8BA5] uppercase tracking-wider">Total Groups</span>
@@ -400,7 +430,7 @@
                 </div>
 
                 <!-- Account Types Ratio Card -->
-                <div class="bg-white border border-[#1A103C]/5 rounded-[1.5rem] p-5 shadow-sm flex flex-col justify-between h-36">
+                <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[1.5rem] p-5 shadow-lg card-lift animate-slide-up-delay-4 flex flex-col justify-between h-36">
                     <div class="space-y-3.5">
                         <!-- Free accounts progress bar -->
                         <div>
@@ -433,9 +463,9 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                 
                 <!-- LEFT COLUMN: User Management Table (Takes 2 columns wide) -->
-                <div class="bg-white border border-[#1A103C]/5 rounded-[2rem] p-6 shadow-sm lg:col-span-2">
+                <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[2rem] p-6 shadow-lg card-lift animate-slide-up-delay-1 lg:col-span-2">
                     <div class="flex items-center justify-between mb-5">
-                        <h2 class="heading-font text-lg font-bold text-[#1A103C]">User Management</h2>
+                        <h2 class="heading-font text-lg font-bold text-[#1A103C] tracking-tight">User Management</h2>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -472,7 +502,7 @@
                                             default => null
                                         };
                                     @endphp
-                                    <tr class="hover:bg-slate-50/50 transition">
+                                    <tr class="table-row-hover transition">
                                         <!-- User avatar + detail -->
                                         <td class="py-3.5 pl-2">
                                             <div class="flex items-center gap-3">
@@ -609,7 +639,7 @@
                 <div class="space-y-6 lg:col-span-1">
                     
                     <!-- Recent Admin Actions Card -->
-                    <div class="bg-white border border-[#1A103C]/5 rounded-[2rem] p-6 shadow-sm">
+                    <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[2rem] p-6 shadow-lg card-lift animate-slide-up-delay-2">
                         <div class="flex items-center justify-between mb-4.5">
                             <h3 class="heading-font text-sm font-bold text-[#1A103C]">Recent Admin Actions</h3>
                             <a href="{{ route('admin.activity') }}" class="text-[10px] font-extrabold text-[#6C3AF4] uppercase tracking-wider hover:underline">View All</a>
@@ -652,7 +682,7 @@
                     </div>
 
                     <!-- User Sign-ins Over Time Card -->
-                    <div class="bg-white border border-[#1A103C]/5 rounded-[2rem] p-6 shadow-sm">
+                    <div class="bg-white/85 backdrop-blur-sm border border-white/60 rounded-[2rem] p-6 shadow-lg card-lift animate-slide-up-delay-3">
                         <div class="flex items-center justify-between mb-2">
                             <h3 class="heading-font text-sm font-bold text-[#1A103C]">User Sign-ins Over Time</h3>
                             <select class="border border-slate-200/80 rounded-full px-3 py-1 text-[9px] font-bold text-slate-500 bg-[#F8F9FD] outline-none cursor-pointer">
@@ -961,12 +991,12 @@
                         tooltip: {
                             backgroundColor: '#1A103C',
                             titleFont: {
-                                family: 'Plus Jakarta Sans',
+                                family: 'DM Sans',
                                 size: 10,
                                 weight: 'bold'
                             },
                             bodyFont: {
-                                family: 'Plus Jakarta Sans',
+                                family: 'DM Sans',
                                 size: 11,
                                 weight: 'bold'
                             },
@@ -982,7 +1012,7 @@
                             },
                             ticks: {
                                 font: {
-                                    family: 'Plus Jakarta Sans',
+                                    family: 'DM Sans',
                                     size: 9,
                                     weight: '600'
                                 },
@@ -996,7 +1026,7 @@
                             },
                             ticks: {
                                 font: {
-                                    family: 'Plus Jakarta Sans',
+                                    family: 'DM Sans',
                                     size: 9,
                                     weight: '600'
                                 },
