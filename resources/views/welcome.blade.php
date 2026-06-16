@@ -247,7 +247,7 @@
                 <!-- ACTIONS -->
                 <div class="flex items-center justify-between py-0.5">
                     <label for="remember_me" class="flex items-center select-none cursor-pointer">
-                        <input id="remember_me" name="remember" type="checkbox"
+                        <input id="remember_me" name="remember" type="checkbox" checked
                                class="rounded border-slate-300/80 text-[#6C3AF4] focus:ring-[#6C3AF4]/20 focus:ring-offset-0 h-4 w-4 bg-[#F8F8FC]">
                         <span class="ml-2 text-xs font-semibold text-slate-600">Remember me</span>
                     </label>
