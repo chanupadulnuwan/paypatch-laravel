@@ -41,8 +41,28 @@
         .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
         .animate-float { animation: float 3s ease-in-out infinite; }
         .animate-count { animation: countUp 0.8s 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .card-lift { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(108,58,244,0.12); }
+        /* Card hover lift & glow */
+        .card-lift { 
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .card-lift:hover { 
+            transform: translateY(-5px) scale(1.01); 
+            box-shadow: 0 20px 40px rgba(108, 58, 244, 0.12), 0 0 20px rgba(176, 38, 243, 0.08); 
+            border-color: rgba(108, 58, 244, 0.25);
+        }
+
+        /* Button hover pop & glow */
+        button, .btn-glow {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, color 0.25s ease;
+        }
+        button:hover:not(:disabled), .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 58, 244, 0.15), 0 0 12px rgba(176, 38, 243, 0.1);
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0) scale(0.97);
+        }
+
         .nav-underline { position: relative; }
         .nav-underline::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #6C3AF4; transition: width 0.3s ease; border-radius: 2px; }
         .nav-underline:hover::after { width: 100%; }
@@ -209,26 +229,40 @@
              </div>
 
              <!-- Form for profile, avatar and password update -->
-             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="flex flex-col gap-5 flex-grow">
+             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="flex flex-col gap-5 flex-grow"
+                   x-data="{
+                       avatarPreview: null,
+                       handleAvatarChange(event) {
+                           const file = event.target.files[0];
+                           if (file) {
+                               this.avatarPreview = URL.createObjectURL(file);
+                           }
+                       }
+                   }">
                  @csrf
 
                  <!-- Avatar Upload Section -->
                  <div class="flex flex-col items-center gap-3">
                      <div class="relative group">
-                         @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                             <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
-                         @else
-                             <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-2xl shadow-md uppercase">
-                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                             </div>
-                         @endif
+                         <template x-if="avatarPreview">
+                             <img :src="avatarPreview" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/15 shadow-md">
+                         </template>
+                         <template x-if="!avatarPreview">
+                             @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
+                                 <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
+                             @else
+                                 <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-2xl shadow-md uppercase">
+                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                 </div>
+                             @endif
+                         </template>
                          <!-- Camera Upload Indicator overlay -->
                          <label class="absolute inset-0 bg-[#1A103C]/60 text-white rounded-full flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition duration-150">
                              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path>
                                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"></path>
                              </svg>
-                             <input type="file" name="profile_photo" class="hidden" accept="image/*">
+                             <input type="file" name="profile_photo" class="hidden" accept="image/*" @change="handleAvatarChange">
                          </label>
                      </div>
                      <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Change photo</span>
@@ -765,10 +799,10 @@
                             @endphp
                             <div class="flex items-center justify-between py-0.5">
                                 <div class="flex items-center gap-3">
-                                    <!-- Initials Avatar -->
-                                    <div class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200/40 flex items-center justify-center text-[#1A103C] font-extrabold text-xs">
-                                        {{ strtoupper(substr($member->name, 0, 1)) }}
-                                    </div>
+                                    <!-- Member Avatar -->
+                                    <img src="{{ $member->profile_photo_url }}" 
+                                         class="h-9 w-9 rounded-full object-cover border border-slate-200/40 shadow-sm" 
+                                         alt="{{ $member->name }}">
                                     <div>
                                         <h4 class="font-extrabold text-xs text-[#1A103C] flex items-center gap-1">
                                             {{ $member->name }}
@@ -814,7 +848,7 @@
                     <div class="flex gap-3">
                         <!-- Add Expense Trigger -->
                         <button @click="activeModal = 'add-expense'" 
-                                class="flex-grow py-2.5 bg-[#6C3AF4]/5 border border-[#6C3AF4]/15 hover:bg-[#6C3AF4] hover:text-white text-[#6C3AF4] rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
+                                class="flex-grow py-2.5 bg-[#6C3AF4]/5 border border-[#6C3AF4]/15 hover:bg-gradient-to-r hover:from-[#6C3AF4] hover:to-[#B026F3] hover:border-transparent hover:text-white text-[#6C3AF4] rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
                             </svg>
@@ -823,7 +857,7 @@
 
                         <!-- Settle Up Trigger -->
                         <button @click="activeModal = 'settle'" 
-                                class="flex-grow py-2.5 bg-[#E63946]/5 border border-[#E63946]/15 hover:bg-[#E63946] hover:text-white text-[#E63946] rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
+                                class="flex-grow py-2.5 bg-[#B026F3]/5 border border-[#B026F3]/15 hover:bg-gradient-to-r hover:from-[#B026F3] hover:to-[#6C3AF4] hover:border-transparent hover:text-white text-[#B026F3] rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 4.5l-15 15m0 0h11.25m-11.25 0V8.25"></path>
                             </svg>
@@ -832,7 +866,7 @@
 
                         <!-- Invite Friends Trigger -->
                         <button @click="activeModal = 'edit-group'; groupTab = 'members'" 
-                                class="flex-grow py-2.5 bg-[#6C3AF4]/5 hover:bg-[#6C3AF4]/10 text-purple-700 rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
+                                class="flex-grow py-2.5 bg-slate-50 border border-slate-200/80 hover:bg-slate-800 hover:border-transparent hover:text-white text-slate-700 rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m2.25-9h1.5a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 013.75 3h1.5m10.5 0v3.75c0 .621.504 1.125 1.125 1.125h3.75M9 16.5h1.5M9 13.5h3.75m-3.75-3h3.75"></path>
                             </svg>
@@ -1404,9 +1438,9 @@
                             @foreach($members as $member)
                                 <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-100 rounded-xl">
                                     <div class="flex items-center gap-2.5">
-                                        <div class="h-7 w-7 rounded-full bg-slate-200/60 flex items-center justify-center text-slate-700 font-extrabold text-xs">
-                                            {{ strtoupper(substr($member->name, 0, 1)) }}
-                                        </div>
+                                        <img src="{{ $member->profile_photo_url }}" 
+                                             class="h-7 w-7 rounded-full object-cover border border-slate-200/60 shadow-sm" 
+                                             alt="{{ $member->name }}">
                                         <div>
                                             <span class="text-xs font-extrabold text-[#1A103C]">{{ $member->name }}</span>
                                             @if($member->id === $group->created_by)

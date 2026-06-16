@@ -15,8 +15,11 @@ class GoogleController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function redirectToGoogle()
+    public function redirectToGoogle(\Illuminate\Http\Request $request)
     {
+        if ($request->has('plan')) {
+            session(['selected_plan' => $request->plan]);
+        }
         return Socialite::driver('google')->redirect();
     }
 
@@ -49,6 +52,12 @@ class GoogleController extends Controller
                     $user->update(['google_id' => $googleUser->id]);
                 } else {
                     // 3. Register a new user dynamically
+                    $plan = session('selected_plan', 'Free Tier');
+                    $accountType = 'free';
+                    if ($plan === 'Premium' || $plan === 'Premium Plus' || $plan === 'premium') {
+                        $accountType = 'premium';
+                    }
+
                     $user = User::create([
                         'name' => $googleUser->name,
                         'email' => $googleUser->email,
@@ -57,7 +66,7 @@ class GoogleController extends Controller
                         'country' => 'United States', // Default fallback country
                         'role' => 'user',
                         'status' => 'active',
-                        'account_type' => 'free',
+                        'account_type' => $accountType,
                     ]);
 
                     // Auto-enroll new user in default seeded groups to supply previous user data

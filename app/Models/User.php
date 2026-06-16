@@ -75,6 +75,21 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    // Accessor to dynamically resolve profile photo URL
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            if (str_starts_with($this->profile_photo_path, 'preset:')) {
+                return asset(str_replace('preset:', '', $this->profile_photo_path));
+            }
+            if (filter_var($this->profile_photo_path, FILTER_VALIDATE_URL)) {
+                return $this->profile_photo_path;
+            }
+            return asset($this->profile_photo_path);
+        }
+        return $this->defaultProfilePhotoUrl();
+    }
+
     // ─── RELATIONSHIPS ───────────────────────────────────────────────────────
     // A user belongs to many groups via group_members
     public function groups()

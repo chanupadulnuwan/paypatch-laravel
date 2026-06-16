@@ -10,10 +10,10 @@
     <!-- SEO Meta Tags -->
     <meta name="description" content="Split expenses, trips, dinners, and hangouts with friends. PayPatch keeps the money side fair.">
 
-    <!-- Google Fonts for Premium Pairings -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     <!-- Styles / Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,13 +23,19 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'DM Sans', sans-serif;
+            font-optical-sizing: auto;
+        }
+        .heading-display {
+            font-family: 'Fraunces', serif;
+            font-optical-sizing: auto;
         }
         .heading-serif {
-            font-family: 'Lora', serif;
+            font-family: 'Fraunces', serif;
+            font-optical-sizing: auto;
         }
         .heading-font {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
         }
         @keyframes letter-fade-in {
             0% {
@@ -54,6 +60,11 @@
             transform: translateY(-8px) scale(1.18);
             color: #6C3AF4;
         }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
     </style>
 </head>
 @php
@@ -63,7 +74,7 @@
     }
     $initialModal = $defaultModal ?? $errorModal;
 @endphp
-<body class="h-full min-h-screen bg-slate-900 text-slate-800 antialiased overflow-x-hidden relative"
+<body class="h-full min-h-screen text-slate-800 antialiased overflow-x-hidden relative"
       x-data="{ 
           activeModal: '{{ $initialModal }}', 
           showPw: false, 
@@ -77,10 +88,12 @@
           }
       }">
 
-    <!-- FULL SCREEN BACKROUND & MAIN WRAPPER -->
+    <!-- FULL SCREEN BACKGROUND & MAIN WRAPPER -->
     <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 z-0 select-none"
-         style="background-image: url('{{ asset('assets/auth-bg.jpg') }}?v=3');">
+         style="background-image: url('{{ asset('assets/park-bg.png') }}?v=3');">
     </div>
+    <!-- Light overlay for readability on light background -->
+    <div class="absolute inset-0 bg-white/20 z-0 pointer-events-none"></div>
 
     <!-- MAIN INTERFACE CONTAINER WITH INLINE CSS BLUR TRANSITION -->
     <div class="relative z-10 flex flex-col min-h-screen w-full"
@@ -94,13 +107,13 @@
             </a>
 
             <!-- NAVIGATION CAPSULE -->
-            <nav class="backdrop-blur-md bg-white/20 border border-white/30 rounded-full py-2.5 pl-12 pr-3 flex items-center gap-10 md:gap-14 shadow-lg shadow-purple-950/5">
-                <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block">Home</a>
-                <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block">About us</a>
-                <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block">Premium</a>
-                
-                <button @click="activeModal = 'login'" 
-                        class="px-6 py-2 bg-[#1A103C]/10 border border-[#1A103C]/20 hover:bg-[#1A103C] hover:text-white text-[#1A103C] rounded-full font-extrabold text-sm transition-all duration-300 transform hover:scale-105 active:scale-95">
+            <nav class="backdrop-blur-md bg-white/40 border border-white/50 rounded-full py-2.5 pl-12 pr-3 flex items-center gap-10 md:gap-14 shadow-lg shadow-purple-950/5">
+                <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block heading-font">Home</a>
+                <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block heading-font">About us</a>
+                <a href="#" class="text-[#1A103C] hover:text-[#6C3AF4] transition-colors font-semibold text-sm hidden md:inline-block heading-font">Premium</a>
+
+                <button @click="activeModal = 'login'"
+                        class="px-7 py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 heading-font">
                     Login
                 </button>
             </nav>
@@ -110,7 +123,7 @@
         <main class="flex-grow flex items-center w-full px-6 md:px-[1.5in] py-12 md:py-24 max-w-none">
             <div class="max-w-5xl text-left flex flex-col items-start gap-4 md:gap-6">
                 <!-- HERO HEADING -->
-                <h1 id="hero-title" class="heading-serif text-5xl md:text-7xl font-semibold text-[#1A103C] leading-[1.15] tracking-tight">
+                <h1 id="hero-title" class="heading-serif text-5xl md:text-7xl font-bold text-[#1A103C] leading-[1.15] tracking-tight">
                     Share every moment<br>
                     Settle every balance..
                 </h1>
@@ -122,9 +135,9 @@
                 </p>
 
                 <!-- HERO CALL TO ACTION -->
-                <div class="mt-2">
-                    <button @click="activeModal = 'register'" 
-                            class="px-8 py-3.5 bg-transparent border-2 border-[#1A103C] text-[#1A103C] hover:bg-[#1A103C] hover:text-white font-extrabold rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md shadow-purple-950/10">
+                <div class="mt-2 animate-slide-up">
+                    <button @click="activeModal = 'register'"
+                            class="px-8 py-3.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-full text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 heading-font">
                         Start Splitting
                     </button>
                 </div>
@@ -246,9 +259,9 @@
                     @endif
                 </div>
 
-                <!-- SUBMIT BUTTON (VIBRANT PURPLE SOLID) -->
-                <button type="submit" 
-                        class="block w-full py-3.5 bg-[#6C3AF4] hover:bg-[#592BD4] text-white font-bold rounded-xl shadow-lg shadow-[#6C3AF4]/20 transition transform active:scale-98 text-sm outline-none">
+                <!-- SUBMIT BUTTON -->
+                <button type="submit"
+                        class="block w-full py-3.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 text-[11px] uppercase tracking-widest outline-none heading-font">
                     Log In
                 </button>
             </form>
@@ -435,9 +448,9 @@
                     </div>
                 </div>
 
-                <!-- REGISTER BUTTON (VIBRANT GRADIENT) -->
-                <button type="submit" 
-                        class="block w-full py-3.5 mt-4 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white font-bold rounded-xl shadow-lg shadow-[#6C3AF4]/20 transition transform active:scale-98 text-sm outline-none">
+                <!-- REGISTER BUTTON -->
+                <button type="submit"
+                        class="block w-full py-3.5 mt-4 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 text-[11px] uppercase tracking-widest outline-none heading-font">
                     Register
                 </button>
             </form>

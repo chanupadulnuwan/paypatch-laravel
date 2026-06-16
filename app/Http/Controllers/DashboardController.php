@@ -55,7 +55,7 @@ class DashboardController extends Controller
                 $share    = $group->expenses->flatMap->shares->where('user_id', $member->id)->sum('share_amount');
                 $sent     = $group->settlements->where('from_user_id', $member->id)->sum('amount');
                 $received = $group->settlements->where('to_user_id', $member->id)->sum('amount');
-                $memberBalances[$member->id] = round($paid - $share - $sent + $received, 2);
+                $memberBalances[$member->id] = round($paid - $share + $sent - $received, 2);
             }
             $debts = $debtCalculator->simplify($memberBalances);
             foreach ($debts as $debt) {
@@ -98,7 +98,7 @@ class DashboardController extends Controller
         $sent     = $group->settlements->where('from_user_id', $userId)->sum('amount');
         $received = $group->settlements->where('to_user_id', $userId)->sum('amount');
 
-        return round($paid - $share - $sent + $received, 2);
+        return round($paid - $share + $sent - $received, 2);
     }
 
     // Fetch live USD→LKR rate; returns null if API is down

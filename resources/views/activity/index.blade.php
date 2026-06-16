@@ -34,8 +34,28 @@
         .animate-slide-up-delay-1 { animation: slideUpFade 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
         .animate-fade-in { animation: fadeIn 0.5s ease both; }
         .animate-scale-in { animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .card-lift { transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .card-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(108,58,244,0.12); }
+        /* Card hover lift & glow */
+        .card-lift { 
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .card-lift:hover { 
+            transform: translateY(-5px) scale(1.01); 
+            box-shadow: 0 20px 40px rgba(108, 58, 244, 0.12), 0 0 20px rgba(176, 38, 243, 0.08); 
+            border-color: rgba(108, 58, 244, 0.25);
+        }
+
+        /* Button hover pop & glow */
+        button, .btn-glow {
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, color 0.25s ease;
+        }
+        button:hover:not(:disabled), .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(108, 58, 244, 0.15), 0 0 12px rgba(176, 38, 243, 0.1);
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0) scale(0.97);
+        }
+
         .nav-underline { position: relative; }
         .nav-underline::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: #6C3AF4; transition: width 0.3s ease; border-radius: 2px; }
         .nav-underline:hover::after { width: 100%; }
@@ -161,26 +181,40 @@
              </div>
 
              <!-- Form for profile, avatar and password update -->
-             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="flex flex-col gap-5 flex-grow">
+             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="flex flex-col gap-5 flex-grow"
+                   x-data="{
+                       avatarPreview: null,
+                       handleAvatarChange(event) {
+                           const file = event.target.files[0];
+                           if (file) {
+                               this.avatarPreview = URL.createObjectURL(file);
+                           }
+                       }
+                   }">
                  @csrf
 
                  <!-- Avatar Upload Section -->
                  <div class="flex flex-col items-center gap-3">
                      <div class="relative group">
-                         @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                             <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
-                         @else
-                             <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-2xl shadow-md uppercase">
-                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                             </div>
-                         @endif
+                         <template x-if="avatarPreview">
+                             <img :src="avatarPreview" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/15 shadow-md">
+                         </template>
+                         <template x-if="!avatarPreview">
+                             @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
+                                 <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
+                             @else
+                                 <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-2xl shadow-md uppercase">
+                                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                 </div>
+                             @endif
+                         </template>
                          <!-- Camera Upload Indicator overlay -->
                          <label class="absolute inset-0 bg-[#1A103C]/60 text-white rounded-full flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition duration-150">
                              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"></path>
                                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"></path>
                              </svg>
-                             <input type="file" name="profile_photo" class="hidden" accept="image/*">
+                             <input type="file" name="profile_photo" class="hidden" accept="image/*" @change="handleAvatarChange">
                          </label>
                      </div>
                      <span class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Change photo</span>

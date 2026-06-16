@@ -31,7 +31,7 @@ class GroupController extends Controller
                     $sent = $group->settlements->where('from_user_id', $userId)->sum('amount');
                     $received = $group->settlements->where('to_user_id', $userId)->sum('amount');
                     
-                    $group->your_balance = round($paid - $share - $sent + $received, 2);
+                    $group->your_balance = round($paid - $share + $sent - $received, 2);
                     $group->total_expenses = $group->expenses->sum('amount');
                     return $group;
                 });
@@ -94,7 +94,7 @@ class GroupController extends Controller
             $share    = $group->expenses->flatMap->shares->where('user_id', $member->id)->sum('share_amount');
             $sent     = $group->settlements->where('from_user_id', $member->id)->sum('amount');
             $received = $group->settlements->where('to_user_id', $member->id)->sum('amount');
-            $memberBalances[$member->id] = round($paid - $share - $sent + $received, 2);
+            $memberBalances[$member->id] = round($paid - $share + $sent - $received, 2);
         }
 
         // Use DebtCalculatorService to get minimum transactions needed

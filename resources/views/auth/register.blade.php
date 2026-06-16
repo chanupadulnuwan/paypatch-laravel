@@ -7,10 +7,10 @@
 
     <title>PayPatch — Create Account & Select Plan</title>
 
-    <!-- Google Fonts for Premium Pairings -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
 
     <!-- Styles / Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -20,10 +20,13 @@
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'DM Sans', sans-serif;
         }
         .heading-font {
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .heading-serif {
+            font-family: 'Fraunces', serif;
         }
     </style>
 </head>
@@ -304,6 +307,25 @@
                         class="block w-full py-3.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white font-extrabold rounded-xl shadow-lg shadow-[#6C3AF4]/15 transition transform active:scale-98 text-sm outline-none">
                     Create Account & Select Plan
                 </button>
+
+                <!-- SEPARATOR -->
+                <div class="relative my-4 flex items-center">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="flex-shrink mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">or</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
+                </div>
+
+                <!-- GOOGLE SIGN UP BUTTON -->
+                <a :href="'{{ route('auth.google') }}?plan=' + selectedPlan" 
+                   class="w-full flex items-center justify-center gap-3 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-extrabold rounded-xl shadow-sm transition transform active:scale-98 text-sm outline-none">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12 5.04c1.67 0 3.2.58 4.39 1.71l3.27-3.27C17.68 1.54 14.99 1 12 1 7.35 1 3.39 3.65 1.5 7.56l3.85 2.99C6.27 7.55 8.91 5.04 12 5.04z"></path>
+                        <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46c-.29 1.48-1.14 2.73-2.42 3.57l3.77 2.92c2.2-2.03 3.68-5.01 3.68-8.64z"></path>
+                        <path fill="#FBBC05" d="M5.35 10.55c-.24-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29L1.5 2.98C.54 4.9.01 7.07.01 9.35c0 2.28.53 4.45 1.49 6.37l3.85-3.17z"></path>
+                        <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.77-2.92c-1.08.72-2.45 1.16-4.19 1.16-3.09 0-5.73-2.51-6.65-5.51l-3.85 2.99C3.39 20.35 7.35 23 12 23z"></path>
+                    </svg>
+                    Sign up with Google
+                </a>
             </form>
 
             <!-- FOOTER LINKS -->

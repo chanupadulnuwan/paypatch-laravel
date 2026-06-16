@@ -176,23 +176,37 @@
                  </form>
              </div>
 
-             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="flex flex-col gap-5 flex-grow">
-                 @csrf
-                 <div class="flex flex-col items-center gap-3">
-                     <div class="relative group">
-                         @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                             <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
-                         @else
-                             <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-[#6C3AF4] to-[#B026F3] flex items-center justify-center text-white font-black text-2xl shadow-md border-2 border-white">
-                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                             </div>
-                         @endif
-                         <label class="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-[10px] font-bold rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
-                             Upload
-                             <input type="file" name="avatar" class="hidden" accept="image/*">
-                         </label>
-                     </div>
-                 </div>
+             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="flex flex-col gap-5 flex-grow"
+                    x-data="{
+                        avatarPreview: null,
+                        handleAvatarChange(event) {
+                            const file = event.target.files[0];
+                            if (file) {
+                                this.avatarPreview = URL.createObjectURL(file);
+                            }
+                        }
+                    }">
+                  @csrf
+                  <div class="flex flex-col items-center gap-3">
+                      <div class="relative group">
+                          <template x-if="avatarPreview">
+                              <img :src="avatarPreview" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/15 shadow-md">
+                          </template>
+                          <template x-if="!avatarPreview">
+                              @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
+                                  <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
+                              @else
+                                  <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-[#6C3AF4] to-[#B026F3] flex items-center justify-center text-white font-black text-2xl shadow-md border-2 border-white">
+                                      {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                  </div>
+                              @endif
+                          </template>
+                          <label class="absolute inset-0 flex items-center justify-center bg-black/40 text-white text-[10px] font-bold rounded-full opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                              Upload
+                              <input type="file" name="profile_photo" class="hidden" accept="image/*" @change="handleAvatarChange">
+                          </label>
+                      </div>
+                  </div>
 
                  <div>
                      <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Name</label>
