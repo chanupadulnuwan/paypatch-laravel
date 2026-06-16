@@ -200,6 +200,7 @@
 
         <!-- ==================== EDIT PROFILE DRAWER (ON NAV BAR) ==================== -->
         <div x-show="profileOpen"
+             x-data="{ upgradeModalOpen: false }"
              x-transition:enter="transition ease-out duration-300 transform"
              x-transition:enter-start="-translate-x-full"
              x-transition:enter-end="translate-x-0"
@@ -212,7 +213,7 @@
              <!-- Drawer Header -->
              <div class="flex items-center justify-between mb-6 border-b border-slate-100 pb-4">
                  <div class="flex items-center gap-3">
-                     <button @click="profileOpen = false" 
+                     <button @click="profileOpen = false; upgradeModalOpen = false" 
                              class="p-1.5 hover:bg-slate-100 rounded-full text-[#1A103C]/70 hover:text-[#1A103C] transition outline-none">
                          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"></path>
@@ -240,6 +241,15 @@
                        }
                    }">
                  @csrf
+
+                 <!-- Flash Alert for Success (inside drawer) -->
+                 @if(session('success'))
+                     <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition
+                          class="p-3 bg-emerald-50 border border-emerald-200/60 text-emerald-800 rounded-xl text-xs font-semibold flex justify-between items-center transition duration-300">
+                         <span>{{ session('success') }}</span>
+                         <button type="button" @click="show = false" class="text-emerald-700 hover:text-emerald-950 ml-2 outline-none font-bold text-xs">✕</button>
+                     </div>
+                 @endif
 
                  <!-- Avatar Upload Section -->
                  <div class="flex flex-col items-center gap-3">
@@ -316,98 +326,98 @@
                  </div>
 
                   <!-- Plan & Billing Section -->
-                  <div class="mt-4 border-t border-slate-100 pt-4" x-data="{ upgradeModalOpen: false }">
-                      <h4 class="text-[11px] font-bold text-[#1A103C]/80 uppercase tracking-wider mb-2">Plan & Billing</h4>
+                   <div class="mt-4 border-t border-slate-100 pt-4">
+                       <h4 class="text-[11px] font-bold text-[#1A103C]/80 uppercase tracking-wider mb-2">Plan & Billing</h4>
+                       
+                       <div class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                           <div>
+                               <span class="text-[10px] font-bold text-slate-400 uppercase block">Current Tier</span>
+                               <span class="text-xs font-extrabold text-[#1A103C] mt-0.5 block">
+                                   {{ Auth::user()->account_type === 'premium' ? 'Premium Plan' : 'Free Tier' }}
+                               </span>
+                           </div>
+                           <button type="button" @click="upgradeModalOpen = true" 
+                                   class="px-3.5 py-1.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-xl font-bold text-[10px] shadow-md shadow-purple-500/10 transition transform active:scale-97 outline-none">
+                               🚀 Upgrade
+                           </button>
+                       </div>
+                   </div>
+
+                  <!-- Action Button -->
+                  <button type="submit" 
+                          class="mt-auto w-full py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300">
+                      Save Settings
+                  </button>
+              </form>
+
+              <!-- Upgrade Plan Popup Modal Overlay -->
+              <div x-show="upgradeModalOpen" 
+                   class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+                   x-transition
+                   style="display: none;">
+                  
+                  <div @click.away="upgradeModalOpen = false"
+                       class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-[#1A103C]/5 text-left p-6">
                       
-                      <div class="flex items-center justify-between p-3.5 bg-slate-50 border border-slate-100 rounded-xl shadow-sm">
+                      <!-- Header -->
+                      <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
                           <div>
-                              <span class="text-[10px] font-bold text-slate-400 uppercase block">Current Tier</span>
-                              <span class="text-xs font-extrabold text-[#1A103C] mt-0.5 block">
-                                  {{ Auth::user()->account_type === 'premium' ? 'Premium Plan' : 'Free Tier' }}
-                              </span>
+                              <h3 class="heading-font text-base font-bold text-[#1A103C]">Select Plan</h3>
+                              <p class="text-[10px] text-slate-400 mt-0.5">Upgrade or downgrade your membership dynamically.</p>
                           </div>
-                          <button type="button" @click="upgradeModalOpen = true" 
-                                  class="px-3.5 py-1.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-xl font-bold text-[10px] shadow-md shadow-purple-500/10 transition transform active:scale-97 outline-none">
-                              🚀 Upgrade
+                          <button type="button" @click="upgradeModalOpen = false" 
+                                  class="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition outline-none">
+                              <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                              </svg>
                           </button>
                       </div>
 
-                      <!-- Upgrade Plan Popup Modal Overlay -->
-                      <div x-show="upgradeModalOpen" 
-                           class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
-                           x-transition
-                           style="display: none;">
-                          
-                          <div @click.away="upgradeModalOpen = false"
-                               class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-[#1A103C]/5 text-left p-6">
-                              
-                              <!-- Header -->
-                              <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
-                                  <div>
-                                      <h3 class="heading-font text-base font-bold text-[#1A103C]">Select Plan</h3>
-                                      <p class="text-[10px] text-slate-400 mt-0.5">Upgrade or downgrade your membership dynamically.</p>
-                                  </div>
-                                  <button type="button" @click="upgradeModalOpen = false" 
-                                          class="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition outline-none">
-                                      <svg class="h-4.5 w-4.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                                      </svg>
-                                  </button>
-                              </div>
-
-                              <!-- List of packages -->
-                              <div class="flex flex-col gap-3.5 max-h-[320px] overflow-y-auto pr-1">
-                                  @php
-                                      $pkgs = \App\Models\Package::all();
-                                  @endphp
-                                  @forelse($pkgs as $p)
-                                      <form method="POST" action="{{ route('profile.upgradePlan') }}">
-                                          @csrf
-                                          <input type="hidden" name="plan_name" value="{{ $p->name }}">
-                                          <div class="border border-slate-200/80 rounded-2xl p-4 flex justify-between items-center hover:border-[#6C3AF4]/40 hover:bg-[#6C3AF4]/2 transition bg-white">
-                                              <div>
-                                                  <div class="flex items-center gap-1.5">
-                                                      <span class="font-bold text-[#1A103C] text-xs">{{ $p->name }}</span>
-                                                      @if(Auth::user()->account_type === 'premium' && ($p->name === 'Premium' || $p->name === 'Premium Plus'))
-                                                          <span class="bg-[#10B981]/15 text-[#10B981] text-[7px] font-black uppercase px-2 py-0.5 rounded-full">Active</span>
-                                                      @elseif(Auth::user()->account_type === 'free' && $p->name === 'Free Tier')
-                                                          <span class="bg-[#10B981]/15 text-[#10B981] text-[7px] font-black uppercase px-2 py-0.5 rounded-full">Active</span>
-                                                      @endif
-                                                  </div>
-                                                  <p class="text-[9px] text-slate-400 font-semibold mt-1">Limits: {{ $p->max_group_members }} members &bull; {{ $p->max_groups }} groups</p>
-                                              </div>
-                                              <button type="submit" 
-                                                      class="px-4 py-1.5 bg-[#6C3AF4] hover:bg-[#592BD4] text-white rounded-lg font-bold text-[10px] shadow-sm transition outline-none">
-                                                  Select
-                                              </button>
+                      <!-- List of packages -->
+                      <div class="flex flex-col gap-3.5 max-h-[320px] overflow-y-auto pr-1">
+                          @php
+                              $pkgs = \App\Models\Package::all();
+                          @endphp
+                          @forelse($pkgs as $p)
+                              <form method="POST" action="{{ route('profile.upgradePlan') }}">
+                                  @csrf
+                                  <input type="hidden" name="plan_name" value="{{ $p->name }}">
+                                  <div class="border border-slate-200/80 rounded-2xl p-4 flex justify-between items-center hover:border-[#6C3AF4]/40 hover:bg-[#6C3AF4]/2 transition bg-white">
+                                      <div>
+                                          <div class="flex items-center gap-1.5">
+                                              <span class="font-bold text-[#1A103C] text-xs">{{ $p->name }}</span>
+                                              @if(Auth::user()->account_type === 'premium' && ($p->name === 'Premium' || $p->name === 'Premium Plus'))
+                                                  <span class="bg-[#10B981]/15 text-[#10B981] text-[7px] font-black uppercase px-2 py-0.5 rounded-full">Active</span>
+                                              @elseif(Auth::user()->account_type === 'free' && $p->name === 'Free Tier')
+                                                  <span class="bg-[#10B981]/15 text-[#10B981] text-[7px] font-black uppercase px-2 py-0.5 rounded-full">Active</span>
+                                              @endif
                                           </div>
-                                      </form>
-                                  @empty
-                                      @foreach(['Free Tier', 'Premium', 'Premium Plus'] as $pn)
-                                          <form method="POST" action="{{ route('profile.upgradePlan') }}">
-                                              @csrf
-                                              <input type="hidden" name="plan_name" value="{{ $pn }}">
-                                              <div class="border border-slate-200 rounded-2xl p-4 flex justify-between items-center hover:border-[#6C3AF4]/40 hover:bg-[#6C3AF4]/2 transition">
-                                                  <div>
-                                                      <span class="font-bold text-[#1A103C] text-xs">{{ $pn }}</span>
-                                                  </div>
-                                                  <button type="submit" class="px-4 py-1.5 bg-[#6C3AF4] text-white rounded-lg font-bold text-[10px]">Select</button>
-                                              </div>
-                                          </form>
-                                      @endforeach
-                                  @endforelse
-                              </div>
-                          </div>
+                                          <p class="text-[9px] text-slate-400 font-semibold mt-1">Limits: {{ $p->max_group_members }} members &bull; {{ $p->max_groups }} groups</p>
+                                      </div>
+                                      <button type="submit" 
+                                              class="px-4 py-1.5 bg-[#6C3AF4] hover:bg-[#592BD4] text-white rounded-lg font-bold text-[10px] shadow-sm transition outline-none">
+                                          Select
+                                      </button>
+                                  </div>
+                              </form>
+                          @empty
+                              @foreach(['Free Tier', 'Premium', 'Premium Plus'] as $pn)
+                                  <form method="POST" action="{{ route('profile.upgradePlan') }}">
+                                      @csrf
+                                      <input type="hidden" name="plan_name" value="{{ $pn }}">
+                                      <div class="border border-slate-200 rounded-2xl p-4 flex justify-between items-center hover:border-[#6C3AF4]/40 hover:bg-[#6C3AF4]/2 transition">
+                                          <div>
+                                              <span class="font-bold text-[#1A103C] text-xs">{{ $pn }}</span>
+                                          </div>
+                                          <button type="submit" class="px-4 py-1.5 bg-[#6C3AF4] text-white rounded-lg font-bold text-[10px]">Select</button>
+                                      </div>
+                                  </form>
+                              @endforeach
+                          @endforelse
                       </div>
                   </div>
-
-                 <!-- Action Button -->
-                 <button type="submit" 
-                         class="mt-auto w-full py-2.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white rounded-full font-bold text-[11px] uppercase tracking-widest shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300">
-                     Save Settings
-                 </button>
-             </form>
-        </div>
+              </div>
+         </div>
 
     </aside>
 

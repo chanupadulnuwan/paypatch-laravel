@@ -90,7 +90,7 @@
 
     <!-- FULL SCREEN BACKGROUND & MAIN WRAPPER -->
     <div class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 z-0 select-none"
-         style="background-image: url('{{ asset('assets/park-bg.png') }}?v=3');">
+         style="background-image: url('{{ asset('assets/auth-bg.jpg') }}?v=3');">
     </div>
     <!-- Light overlay for readability on light background -->
     <div class="absolute inset-0 bg-white/20 z-0 pointer-events-none"></div>
