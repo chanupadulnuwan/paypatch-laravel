@@ -7,6 +7,9 @@
 
     <title>PayPatch — Share every moment, Settle every balance</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('assets/logo.png') }}">
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="Split expenses, trips, dinners, and hangouts with friends. PayPatch keeps the money side fair.">
 

@@ -7,6 +7,9 @@
 
     <title>PayPatch — Admin Dashboard</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('assets/logo.png') }}">
+
     <!-- Google Fonts — Fraunces · Space Grotesk · DM Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
