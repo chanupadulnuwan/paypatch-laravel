@@ -166,8 +166,8 @@
                  class="w-full flex items-center justify-between p-3.5 bg-white border border-[#1A103C]/10 rounded-2xl shadow-md cursor-pointer hover:bg-slate-50 transition transform active:scale-99 animate-fade-in">
                 <div class="flex items-center gap-3">
                     <!-- User Avatar -->
-                    @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                        <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
+                    @if(Auth::user()->profile_photo_path)
+                        <img src="{{ Auth::user()->profile_photo_url }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
                     @else
                         <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow">
                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
@@ -229,9 +229,9 @@
                              <img :src="avatarPreview" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/15 shadow-md">
                          </template>
                          <template x-if="!avatarPreview">
-                             @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                                 <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
-                             @else
+                              @if(Auth::user()->profile_photo_path)
+                                  <img src="{{ Auth::user()->profile_photo_url }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
+                              @else
                                  <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-2xl shadow-md uppercase">
                                      {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                  </div>

@@ -73,7 +73,7 @@
     <div class="relative z-10 w-full max-w-6xl mx-auto bg-white/90 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-[2.5rem] overflow-hidden grid grid-cols-1 lg:grid-cols-12">
         
         <!-- ==================== LEFT COLUMN: SELECT PRICING PLAN ==================== -->
-        <div class="lg:col-span-7 p-8 md:p-10 border-b lg:border-b-0 lg:border-r border-slate-200/60 bg-gradient-to-br from-slate-50/50 to-white/30 flex flex-col justify-between">
+        <div class="lg:col-span-6 p-8 md:p-10 border-b lg:border-b-0 lg:border-r border-slate-200/60 bg-gradient-to-br from-slate-50/50 to-white/30 flex flex-col justify-between">
             <div>
                 <!-- Brand logo and back link -->
                 <div class="flex items-center justify-between mb-8">
@@ -164,7 +164,7 @@
         </div>
 
         <!-- ==================== RIGHT COLUMN: REGISTRATION SIGNUP FORM ==================== -->
-        <div class="lg:col-span-5 p-8 md:p-10 bg-white flex flex-col justify-center">
+        <div class="lg:col-span-6 p-10 md:p-12 bg-white flex flex-col justify-center">
             
             <div class="mb-6 text-center lg:text-left">
                 <h2 class="heading-font text-2xl md:text-3xl font-extrabold text-[#1A103C] tracking-tight">Create Account</h2>
@@ -189,122 +189,124 @@
                 <!-- BIND SELECTED PLAN DYNAMICALLY -->
                 <input type="hidden" name="plan" :value="selectedPlan">
 
-                <!-- NAME FIELD -->
-                <div>
-                    <label for="reg-name" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Full Name</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                        </span>
-                        <input id="reg-name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name"
-                               placeholder="Enter your full name"
-                               class="block w-full pl-11 pr-4 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- NAME FIELD -->
+                    <div class="md:col-span-2">
+                        <label for="reg-name" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Full Name</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </span>
+                            <input id="reg-name" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name"
+                                   placeholder="Enter your full name"
+                                   class="block w-full pl-11 pr-4 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
+                        </div>
                     </div>
-                </div>
 
-                <!-- EMAIL FIELD -->
-                <div>
-                    <label for="reg-email" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Email Address</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                        </span>
-                        <input id="reg-email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
-                               placeholder="you@example.com"
-                               class="block w-full pl-11 pr-4 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
+                    <!-- EMAIL FIELD -->
+                    <div>
+                        <label for="reg-email" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Email Address</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </span>
+                            <input id="reg-email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
+                                   placeholder="you@example.com"
+                                   class="block w-full pl-11 pr-4 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
+                        </div>
                     </div>
-                </div>
 
-                <!-- COUNTRY DROPDOWN -->
-                <div>
-                    <label for="reg-country" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Country</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h2m-4-7a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </span>
-                        <select id="reg-country" name="country" required
-                                class="block w-full pl-11 pr-10 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-850 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm appearance-none cursor-pointer">
-                            <option value="" disabled {{ old('country') ? '' : 'selected' }}>Select country</option>
-                            <option value="United States" {{ old('country') === 'United States' ? 'selected' : '' }}>United States</option>
-                            <option value="United Kingdom" {{ old('country') === 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
-                            <option value="Canada" {{ old('country') === 'Canada' ? 'selected' : '' }}>Canada</option>
-                            <option value="Australia" {{ old('country') === 'Australia' ? 'selected' : '' }}>Australia</option>
-                            <option value="Singapore" {{ old('country') === 'Singapore' ? 'selected' : '' }}>Singapore</option>
-                            <option value="Sri Lanka" {{ old('country') === 'Sri Lanka' ? 'selected' : '' }}>Sri Lanka</option>
-                            <option value="India" {{ old('country') === 'India' ? 'selected' : '' }}>India</option>
-                            <option value="Germany" {{ old('country') === 'Germany' ? 'selected' : '' }}>Germany</option>
-                            <option value="France" {{ old('country') === 'France' ? 'selected' : '' }}>France</option>
-                            <option value="Japan" {{ old('country') === 'Japan' ? 'selected' : '' }}>Japan</option>
-                        </select>
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-[#8C8BA5]">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </span>
+                    <!-- COUNTRY DROPDOWN -->
+                    <div>
+                        <label for="reg-country" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Country</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h2m-4-7a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </span>
+                            <select id="reg-country" name="country" required
+                                    class="block w-full pl-11 pr-10 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-850 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm appearance-none cursor-pointer">
+                                <option value="" disabled {{ old('country') ? '' : 'selected' }}>Select country</option>
+                                <option value="United States" {{ old('country') === 'United States' ? 'selected' : '' }}>United States</option>
+                                <option value="United Kingdom" {{ old('country') === 'United Kingdom' ? 'selected' : '' }}>United Kingdom</option>
+                                <option value="Canada" {{ old('country') === 'Canada' ? 'selected' : '' }}>Canada</option>
+                                <option value="Australia" {{ old('country') === 'Australia' ? 'selected' : '' }}>Australia</option>
+                                <option value="Singapore" {{ old('country') === 'Singapore' ? 'selected' : '' }}>Singapore</option>
+                                <option value="Sri Lanka" {{ old('country') === 'Sri Lanka' ? 'selected' : '' }}>Sri Lanka</option>
+                                <option value="India" {{ old('country') === 'India' ? 'selected' : '' }}>India</option>
+                                <option value="Germany" {{ old('country') === 'Germany' ? 'selected' : '' }}>Germany</option>
+                                <option value="France" {{ old('country') === 'France' ? 'selected' : '' }}>France</option>
+                                <option value="Japan" {{ old('country') === 'Japan' ? 'selected' : '' }}>Japan</option>
+                            </select>
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-[#8C8BA5]">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                <!-- PASSWORD -->
-                <div>
-                    <label for="reg-password" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                        </span>
-                        <input id="reg-password" :type="showPw ? 'text' : 'password'" name="password" required autocomplete="new-password"
-                               placeholder="••••••••••••"
-                               class="block w-full pl-11 pr-12 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
-                        
-                        <button type="button" @click="showPw = !showPw" 
-                                class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#8C8BA5] hover:text-[#1A103C] outline-none">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="!showPw">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="showPw" style="display: none;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
-                            </svg>
-                        </button>
+                    <!-- PASSWORD -->
+                    <div>
+                        <label for="reg-password" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </span>
+                            <input id="reg-password" :type="showPw ? 'text' : 'password'" name="password" required autocomplete="new-password"
+                                   placeholder="••••••••••••"
+                                   class="block w-full pl-11 pr-12 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
+                            
+                            <button type="button" @click="showPw = !showPw" 
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#8C8BA5] hover:text-[#1A103C] outline-none">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="!showPw">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="showPw" style="display: none;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <!-- CONFIRM PASSWORD -->
-                <div>
-                    <label for="reg-password-confirm" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Confirm Password</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                        </span>
-                        <input id="reg-password-confirm" :type="showConfirmPw ? 'text' : 'password'" name="password_confirmation" required autocomplete="new-password"
-                               placeholder="••••••••••••"
-                               class="block w-full pl-11 pr-12 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
-                        
-                        <button type="button" @click="showConfirmPw = !showConfirmPw" 
-                                class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#8C8BA5] hover:text-[#1A103C] outline-none">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="!showConfirmPw">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="showConfirmPw" style="display: none;">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
-                            </svg>
-                        </button>
+                    <!-- CONFIRM PASSWORD -->
+                    <div>
+                        <label for="reg-password-confirm" class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Confirm Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </span>
+                            <input id="reg-password-confirm" :type="showConfirmPw ? 'text' : 'password'" name="password_confirmation" required autocomplete="new-password"
+                                   placeholder="••••••••••••"
+                                   class="block w-full pl-11 pr-12 py-2.5 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm">
+                            
+                            <button type="button" @click="showConfirmPw = !showConfirmPw" 
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#8C8BA5] hover:text-[#1A103C] outline-none">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="!showConfirmPw">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" x-show="showConfirmPw" style="display: none;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- SUBMIT BUTTON -->
                 <button type="submit" 
-                        class="block w-full py-3.5 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white font-extrabold rounded-xl shadow-lg shadow-[#6C3AF4]/15 transition transform active:scale-98 text-sm outline-none">
+                        class="block w-full py-3.5 mt-2 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] hover:from-[#592BD4] hover:to-[#9E1CE0] text-white font-extrabold rounded-xl shadow-lg shadow-[#6C3AF4]/15 transition transform active:scale-98 text-sm outline-none">
                     Create Account & Select Plan
                 </button>
 

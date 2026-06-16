@@ -164,7 +164,7 @@
          style="display: none;">
         
         <!-- ==================== LOGIN POPUP MODAL ==================== -->
-        <div class="bg-white/85 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-[2.2rem] w-full max-w-[440px] p-8 relative transition-all duration-400"
+        <div class="bg-white/85 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-[2.2rem] w-full max-w-[485px] p-10 relative transition-all duration-400"
              x-show="activeModal === 'login'"
              x-transition:enter="transition ease-out duration-400 transform"
              x-transition:enter-start="opacity-0 translate-y-12 scale-[0.96]"
@@ -296,7 +296,7 @@
         </div>
 
         <!-- ==================== REGISTRATION POPUP MODAL ==================== -->
-        <div class="bg-white/85 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-[2.2rem] w-full max-w-[440px] p-8 relative transition-all duration-400"
+        <div class="bg-white/85 backdrop-blur-2xl border border-white/50 shadow-2xl rounded-[2.2rem] w-full max-w-[485px] p-10 relative transition-all duration-400"
              x-show="activeModal === 'register'"
              x-transition:enter="transition ease-out duration-400 transform"
              x-transition:enter-start="opacity-0 translate-y-12 scale-[0.96]"
@@ -453,6 +453,25 @@
                         class="block w-full py-3.5 mt-4 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white font-bold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 text-[11px] uppercase tracking-widest outline-none heading-font">
                     Register
                 </button>
+
+                <!-- SEPARATOR -->
+                <div class="relative my-4 flex items-center">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="flex-shrink mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">or</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
+                </div>
+
+                <!-- GOOGLE SIGN UP BUTTON -->
+                <a href="{{ route('auth.google') }}" 
+                   class="w-full flex items-center justify-center gap-3 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-extrabold rounded-xl shadow-sm transition transform active:scale-98 text-sm outline-none">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12 5.04c1.67 0 3.2.58 4.39 1.71l3.27-3.27C17.68 1.54 14.99 1 12 1 7.35 1 3.39 3.65 1.5 7.56l3.85 2.99C6.27 7.55 8.91 5.04 12 5.04z"></path>
+                        <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46c-.29 1.48-1.14 2.73-2.42 3.57l3.77 2.92c2.2-2.03 3.68-5.01 3.68-8.64z"></path>
+                        <path fill="#FBBC05" d="M5.35 10.55c-.24-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29L1.5 2.98C.54 4.9.01 7.07.01 9.35c0 2.28.53 4.45 1.49 6.37l3.85-3.17z"></path>
+                        <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.77-2.92c-1.08.72-2.45 1.16-4.19 1.16-3.09 0-5.73-2.51-6.65-5.51l-3.85 2.99C3.39 20.35 7.35 23 12 23z"></path>
+                    </svg>
+                    Sign up with Google
+                </a>
             </form>
 
             <!-- FOOTER -->

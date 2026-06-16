@@ -185,8 +185,8 @@
                  class="w-full flex items-center justify-between p-3.5 bg-white border border-[#1A103C]/10 rounded-2xl shadow-md cursor-pointer hover:bg-slate-50 transition transform active:scale-99 animate-fade-in">
                 <div class="flex items-center gap-3">
                     <!-- User Avatar -->
-                    @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                        <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
+                    @if(Auth::user()->profile_photo_path)
+                        <img src="{{ Auth::user()->profile_photo_url }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
                     @else
                         <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow">
                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
@@ -248,9 +248,9 @@
                              <img :src="avatarPreview" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/15 shadow-md">
                          </template>
                          <template x-if="!avatarPreview">
-                             @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                                 <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
-                             @else
+                              @if(Auth::user()->profile_photo_path)
+                                  <img src="{{ Auth::user()->profile_photo_url }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
+                              @else
                                  <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-2xl shadow-md uppercase">
                                      {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                                  </div>
@@ -446,7 +446,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button @click="activeModal = 'settle'; setTimeout(() => { document.getElementById('settle-to').value = '{{ $requestLog->user_id }}'; document.getElementById('settle-amt').value = '{{ $requestLog->request_amount }}'; }, 100)"
+                            <button @click="activeModal = 'settle'; setTimeout(() => { document.getElementById('settle-from').value = '{{ $requestLog->user_id }}'; document.getElementById('settle-to').value = '{{ Auth::id() }}'; document.getElementById('settle-amt').value = '{{ $requestLog->request_amount }}'; }, 100)"
                                     class="px-4 py-2 bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white text-[11px] font-bold rounded-full shadow-md shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 outline-none">
                                 Settle Up
                             </button>
@@ -647,69 +647,75 @@
                                         $catBg = 'bg-orange-100/50 text-orange-600';
                                     }
                                 @endphp
-                                <div class="flex items-center justify-between p-3.5 hover:bg-[#F8F9FD] border border-transparent hover:border-slate-100 rounded-2xl transition">
-                                    <div class="flex items-center gap-4">
-                                        <!-- User Initials Circle -->
-                                        <div class="h-11 w-11 rounded-full bg-slate-100 border border-slate-200/50 flex items-center justify-center text-[#1A103C] font-extrabold text-sm shadow-sm">
-                                            {{ strtoupper(substr($expense->paidBy->name, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <h3 class="font-extrabold text-sm text-[#1A103C]">{{ $expense->title }}</h3>
-                                            <p class="text-[10px] font-semibold text-slate-400 mt-1">
-                                                {{ $expense->created_at->format('M d') }} &bull; Paid by {{ $expense->paid_by === Auth::id() ? 'You' : explode(' ', $expense->paidBy->name)[0] }}
-                                            </p>
-                                        </div>
-                                    </div>
+                                     <div class="grid grid-cols-12 items-center p-3.5 hover:bg-[#F8F9FD] border border-transparent hover:border-slate-100 rounded-2xl transition gap-2">
+                                     <!-- Left part: Avatar & Title (col-span-6) -->
+                                     <div class="col-span-6 flex items-center gap-4 min-w-0">
+                                         <!-- User Avatar / Initials Circle -->
+                                         @if($expense->paidBy->profile_photo_path)
+                                             <img src="{{ $expense->paidBy->profile_photo_url }}" class="h-11 w-11 rounded-full object-cover border border-slate-200/50 shadow-sm flex-shrink-0">
+                                         @else
+                                             <div class="h-11 w-11 rounded-full bg-slate-100 border border-slate-200/50 flex items-center justify-center text-[#1A103C] font-extrabold text-sm shadow-sm flex-shrink-0">
+                                                 {{ strtoupper(substr($expense->paidBy->name, 0, 1)) }}
+                                             </div>
+                                         @endif
+                                         <div class="truncate">
+                                             <h3 class="font-extrabold text-sm text-[#1A103C] truncate">{{ $expense->title }}</h3>
+                                             <p class="text-[10px] font-semibold text-slate-400 mt-1 truncate">
+                                                 {{ $expense->created_at->format('M d') }} &bull; Paid by {{ $expense->paid_by === Auth::id() ? 'You' : explode(' ', $expense->paidBy->name)[0] }}
+                                             </p>
+                                         </div>
+                                     </div>
 
-                                    <!-- Category Pill -->
-                                    <span class="px-3.5 py-1 rounded-full text-[10px] font-bold {{ $catBg }} tracking-wide">
-                                        {{ $cat }}
-                                    </span>
+                                     <!-- Middle part: Category Pill (col-span-3) -->
+                                     <div class="col-span-3 text-center">
+                                         <span class="inline-block px-3.5 py-1 rounded-full text-[10px] font-bold {{ $catBg }} tracking-wide truncate max-w-full">
+                                             {{ $cat }}
+                                         </span>
+                                     </div>
 
-                                    <div class="flex items-center gap-4">
-                                        <div class="text-right flex items-center gap-3">
-                                            <span class="text-sm font-bold text-[#1A103C]">{{ $group->currency }} {{ number_format($expense->amount, 2) }}</span>
-                                            <!-- Inline actions if creator or owner -->
-                                            @if($expense->created_by === Auth::id() || $group->created_by === Auth::id())
-                                                <div class="flex items-center gap-2">
-                                                    <!-- Pencil/Edit Icon Button -->
-                                                    <button @click="
-                                                        editingExpense = {
-                                                            id: {{ $expense->id }},
-                                                            title: '{{ addslashes($expense->title) }}',
-                                                            amount: {{ $expense->amount }},
-                                                            paid_by: '{{ $expense->paid_by }}',
-                                                            split_type: '{{ $expense->split_type }}',
-                                                            selected_members: [
-                                                                @foreach($expense->shares as $share)
-                                                                    @if($share->share_amount > 0)
-                                                                        '{{ $share->user_id }}',
-                                                                    @endif
-                                                                @endforeach
-                                                            ]
-                                                        };
-                                                        activeModal = 'edit-expense';
-                                                    " class="p-1 hover:bg-slate-100 text-slate-400 hover:text-[#6C3AF4] rounded-lg transition outline-none" title="Edit">
-                                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path>
-                                                        </svg>
-                                                    </button>
+                                     <!-- Right part: Price Amount & Edit/Delete (col-span-3) -->
+                                     <div class="col-span-3 flex items-center justify-end gap-3 text-right">
+                                         <span class="text-sm font-bold text-[#1A103C] whitespace-nowrap">{{ $group->currency }} {{ number_format($expense->amount, 2) }}</span>
+                                         <!-- Inline actions if creator or owner -->
+                                         @if($expense->created_by === Auth::id() || $group->created_by === Auth::id())
+                                             <div class="flex items-center gap-1.5 flex-shrink-0">
+                                                 <!-- Pencil/Edit Icon Button -->
+                                                 <button @click="
+                                                     editingExpense = {
+                                                         id: {{ $expense->id }},
+                                                         title: '{{ addslashes($expense->title) }}',
+                                                         amount: {{ $expense->amount }},
+                                                         paid_by: '{{ $expense->paid_by }}',
+                                                         split_type: '{{ $expense->split_type }}',
+                                                         selected_members: [
+                                                             @foreach($expense->shares as $share)
+                                                                 @if($share->share_amount > 0)
+                                                                     '{{ $share->user_id }}',
+                                                                 @endif
+                                                             @endforeach
+                                                         ]
+                                                     };
+                                                     activeModal = 'edit-expense';
+                                                 " class="p-1 hover:bg-slate-100 text-slate-400 hover:text-[#6C3AF4] rounded-lg transition outline-none" title="Edit">
+                                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"></path>
+                                                     </svg>
+                                                 </button>
 
-                                                    <!-- Trash/Delete Icon Button -->
-                                                    <form method="POST" action="{{ route('expenses.destroy', $expense) }}" class="inline-block">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" onclick="return confirm('Delete this expense?')"
-                                                                class="p-1 hover:bg-slate-100 text-slate-400 hover:text-red-600 rounded-lg transition outline-none" title="Delete">
-                                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path>
-                                                            </svg>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
+                                                 <!-- Trash/Delete Icon Button -->
+                                                 <form method="POST" action="{{ route('expenses.destroy', $expense) }}" class="inline-block">
+                                                     @csrf
+                                                     @method('DELETE')
+                                                     <button type="submit" onclick="return confirm('Delete this expense?')"
+                                                             class="p-1 hover:bg-slate-100 text-slate-400 hover:text-red-600 rounded-lg transition outline-none" title="Delete">
+                                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"></path>
+                                                         </svg>
+                                                     </button>
+                                                 </form>
+                                             </div>
+                                         @endif
+                                     </div>
                                 </div>
                             @endforeach
                         </div>
@@ -742,36 +748,43 @@
                                     $isDebtor = ($debt['from'] == Auth::id());
                                 @endphp
                                 @if($fromUser && $toUser)
-                                    <div class="flex items-center justify-between p-3.5 hover:bg-[#F8F9FD] border border-transparent hover:border-slate-100 rounded-2xl transition">
-                                        <div class="flex items-center gap-3">
-                                            <!-- From user initials -->
-                                            <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-extrabold text-xs border border-slate-200/30">
-                                                {{ strtoupper(substr($fromUser->name, 0, 1)) }}
-                                            </div>
-                                            <span class="text-xs text-slate-400">→</span>
-                                            <!-- To user initials -->
-                                            <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-extrabold text-xs border border-slate-200/30">
-                                                {{ strtoupper(substr($toUser->name, 0, 1)) }}
-                                            </div>
+                                     <div class="flex items-center justify-between p-3.5 hover:bg-[#F8F9FD] border border-transparent hover:border-slate-100 rounded-2xl transition">
+                                         <div class="flex items-center gap-3">
+                                             <!-- From user avatar/initials -->
+                                             @if($fromUser->profile_photo_path)
+                                                 <img src="{{ $fromUser->profile_photo_url }}" class="h-8 w-8 rounded-full object-cover border border-slate-200/30 shadow-sm flex-shrink-0">
+                                             @else
+                                                 <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-extrabold text-xs border border-slate-200/30 flex-shrink-0">
+                                                     {{ strtoupper(substr($fromUser->name, 0, 1)) }}
+                                                 </div>
+                                             @endif
+                                             <span class="text-xs text-slate-400">→</span>
+                                             <!-- To user avatar/initials -->
+                                             @if($toUser->profile_photo_path)
+                                                 <img src="{{ $toUser->profile_photo_url }}" class="h-8 w-8 rounded-full object-cover border border-slate-200/30 shadow-sm flex-shrink-0">
+                                             @else
+                                                 <div class="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-extrabold text-xs border border-slate-200/30 flex-shrink-0">
+                                                     {{ strtoupper(substr($toUser->name, 0, 1)) }}
+                                                 </div>
+                                             @endif
 
-                                            <p class="text-xs font-semibold text-slate-700 ml-1.5">
-                                                <span class="font-bold text-[#1A103C]">{{ $fromUser->id === Auth::id() ? 'You' : explode(' ', $fromUser->name)[0] }}</span> pays
-                                                <span class="font-bold text-[#1A103C]">{{ $toUser->id === Auth::id() ? 'You' : explode(' ', $toUser->name)[0] }}</span>
-                                            </p>
-                                        </div>
+                                             <p class="text-xs font-semibold text-slate-700 ml-1.5">
+                                                 <span class="font-bold text-[#1A103C]">{{ $fromUser->id === Auth::id() ? 'You' : explode(' ', $fromUser->name)[0] }}</span> pays
+                                                 <span class="font-bold text-[#1A103C]">{{ $toUser->id === Auth::id() ? 'You' : explode(' ', $toUser->name)[0] }}</span>
+                                             </p>
+                                         </div>
 
-                                        <div class="flex items-center gap-4">
-                                            <span class="text-sm font-extrabold {{ $isDebtor ? 'text-[#E63946]' : 'text-[#10B981]' }}">
-                                                Settle {{ $group->currency }} {{ number_format($debt['amount'], 2) }}
-                                            </span>
-                                            
-                                            <!-- Dynamic Settle Button (opens settlement modal with default values!) -->
-                                            <button @click="activeModal = 'settle'; setTimeout(() => { document.getElementById('settle-to').value = '{{ $toUser->id }}'; document.getElementById('settle-amt').value = '{{ $debt['amount'] }}'; }, 100)"
-                                                    class="px-5 py-2 rounded-full text-[11px] font-bold bg-gradient-to-r from-[#6C3AF4] to-[#B026F3] text-white shadow-md shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 outline-none">
-                                                Settle Now
-                                            </button>
-                                        </div>
-                                    </div>
+                                         <div class="flex items-center gap-4">
+                                             <span class="text-sm font-extrabold {{ $isDebtor ? 'text-[#E63946]' : 'text-[#10B981]' }}">
+                                                 Settle {{ $group->currency }} {{ number_format($debt['amount'], 2) }}
+                                             </span>
+                                             <!-- Dynamic Settle Button (opens settlement modal with default values!) -->
+                                             <button @click="activeModal = 'settle'; setTimeout(() => { document.getElementById('settle-from').value = '{{ $fromUser->id }}'; document.getElementById('settle-to').value = '{{ $toUser->id }}'; document.getElementById('settle-amt').value = '{{ $debt['amount'] }}'; }, 100)"
+                                                     class="px-4 py-1.5 bg-[#6C3AF4]/10 hover:bg-[#6C3AF4] hover:text-white text-[#6C3AF4] font-bold text-xs rounded-full transition transform active:scale-95 outline-none">
+                                                 Settle Now
+                                             </button>
+                                         </div>
+                                     </div>
                                 @endif
                             @endforeach
                         </div>
@@ -848,7 +861,7 @@
                     <div class="flex gap-3">
                         <!-- Add Expense Trigger -->
                         <button @click="activeModal = 'add-expense'" 
-                                class="flex-grow py-2.5 bg-[#6C3AF4]/5 border border-[#6C3AF4]/15 hover:bg-gradient-to-r hover:from-[#6C3AF4] hover:to-[#B026F3] hover:border-transparent hover:text-white text-[#6C3AF4] rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
+                                class="flex-grow py-3 bg-gradient-to-r from-[#6C3AF4] to-[#8054F7] text-white hover:from-[#592BD4] hover:to-[#6C3AF4] rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-lg shadow-purple-500/10 hover:shadow-purple-500/20 hover:scale-103 active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5 outline-none">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
                             </svg>
@@ -857,7 +870,7 @@
 
                         <!-- Settle Up Trigger -->
                         <button @click="activeModal = 'settle'" 
-                                class="flex-grow py-2.5 bg-[#B026F3]/5 border border-[#B026F3]/15 hover:bg-gradient-to-r hover:from-[#B026F3] hover:to-[#6C3AF4] hover:border-transparent hover:text-white text-[#B026F3] rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
+                                class="flex-grow py-3 bg-gradient-to-r from-[#10B981] to-[#059669] text-white hover:from-[#059669] hover:to-[#047857] rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:scale-103 active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5 outline-none">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 4.5l-15 15m0 0h11.25m-11.25 0V8.25"></path>
                             </svg>
@@ -866,7 +879,7 @@
 
                         <!-- Invite Friends Trigger -->
                         <button @click="activeModal = 'edit-group'; groupTab = 'members'" 
-                                class="flex-grow py-2.5 bg-slate-50 border border-slate-200/80 hover:bg-slate-800 hover:border-transparent hover:text-white text-slate-700 rounded-xl font-bold text-[10px] tracking-wide transition transform active:scale-97 flex items-center justify-center gap-1 outline-none">
+                                class="flex-grow py-3 bg-gradient-to-r from-[#B026F3] to-[#9E1CE0] text-white hover:from-[#9E1CE0] hover:to-[#8614C4] rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-lg shadow-pink-500/10 hover:shadow-pink-500/20 hover:scale-103 active:scale-95 transition-all duration-300 flex items-center justify-center gap-1.5 outline-none">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m2.25-9h1.5a2.25 2.25 0 012.25 2.25v13.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V5.25A2.25 2.25 0 013.75 3h1.5m10.5 0v3.75c0 .621.504 1.125 1.125 1.125h3.75M9 16.5h1.5M9 13.5h3.75m-3.75-3h3.75"></path>
                             </svg>
@@ -1211,8 +1224,42 @@
                 <p class="text-[#5E5873] text-[0.85rem] font-medium mt-1">Record a balance settlement directly to a friend.</p>
             </div>
 
+            <!-- Errors Alert -->
+            @if ($errors->any() && session('modal') === 'settle')
+                <div class="mb-4 text-xs text-red-600 bg-red-50 p-3.5 rounded-xl border border-red-100">
+                    <ul class="list-disc list-inside space-y-0.5 font-semibold">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('groups.settle', $group) }}" class="space-y-4">
                 @csrf
+
+                <!-- PAYER (PAID BY) -->
+                <div>
+                    <label class="block text-xs font-bold text-[#1A103C] uppercase tracking-wider mb-1.5 ml-1">Paid By</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-[#8C8BA5]">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
+                            </svg>
+                        </span>
+                        <select id="settle-from" name="from_user_id" required
+                                class="block w-full pl-11 pr-10 py-3 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm appearance-none cursor-pointer">
+                            @foreach($members as $m)
+                                <option value="{{ $m->id }}" {{ $m->id === Auth::id() ? 'selected' : '' }}>{{ $m->name }}</option>
+                            @endforeach
+                        </select>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
 
                 <!-- RECIPIENT -->
                 <div>
@@ -1227,9 +1274,7 @@
                                 class="block w-full pl-11 pr-10 py-3 bg-[#F8F8FC] border border-slate-200/80 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#6C3AF4]/20 focus:border-[#6C3AF4] transition text-sm appearance-none cursor-pointer">
                             <option value="" disabled selected>Select member...</option>
                             @foreach($members as $m)
-                                @if($m->id !== Auth::id())
-                                    <option value="{{ $m->id }}">{{ $m->name }}</option>
-                                @endif
+                                <option value="{{ $m->id }}">{{ $m->name }}</option>
                             @endforeach
                         </select>
                         <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">

@@ -88,8 +88,8 @@
             <div @click="profileOpen = true" 
                  class="w-full flex items-center justify-between p-3.5 bg-white border border-[#1A103C]/10 rounded-2xl shadow-md cursor-pointer hover:bg-slate-50 transition transform active:scale-99">
                 <div class="flex items-center gap-3">
-                    @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                        <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
+                    @if(Auth::user()->profile_photo_path)
+                        <img src="{{ Auth::user()->profile_photo_url }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
                     @else
                         <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-[#6C3AF4] to-[#B026F3] flex items-center justify-center text-white font-bold text-sm shadow">
                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}

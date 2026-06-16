@@ -231,39 +231,58 @@ class GroupController extends Controller
     // settle — record a payment from the logged-in user to another member
     public function settle(Request $request, Group $group)
     {
-        $request->validate([
-            'to_user_id' => 'required|exists:users,id',
-            'amount'     => 'required|numeric|min:0.01',
-            'note'       => 'nullable|string|max:255',
-        ]);
+        try {
+            $request->validate([
+                'from_user_id' => 'nullable|exists:users,id',
+                'to_user_id'   => 'required|exists:users,id',
+                'amount'       => 'required|numeric|min:0.01',
+                'note'         => 'nullable|string|max:255',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput()->with('modal', 'settle');
+        }
+
+        $fromUserId = $request->input('from_user_id', Auth::id());
+        $toUserId = $request->to_user_id;
+
+        if ($fromUserId == $toUserId) {
+            return back()->withErrors(['to_user_id' => 'Payer and recipient must be different members.'])->withInput()->with('modal', 'settle');
+        }
+
+        // Verify both are group members
+        $memberIds = $group->members()->pluck('users.id')->toArray();
+        if (!in_array($fromUserId, $memberIds) || !in_array($toUserId, $memberIds)) {
+            return back()->withErrors(['to_user_id' => 'Both payer and recipient must be members of this group.'])->withInput()->with('modal', 'settle');
+        }
 
         Settlement::create([
             'group_id'     => $group->id,
-            'from_user_id' => Auth::id(),
-            'to_user_id'   => $request->to_user_id,
+            'from_user_id' => $fromUserId,
+            'to_user_id'   => $toUserId,
             'amount'       => $request->amount,
             'note'         => $request->note,
         ]);
 
-        $toUser = User::find($request->to_user_id);
+        $fromUser = User::find($fromUserId);
+        $toUser = User::find($toUserId);
 
         // Delete any matching pending settlement requests
         ActivityLog::where('group_id', $group->id)
             ->where('type', 'settlement_request')
-            ->where('user_id', $request->to_user_id)
-            ->where('request_to_user_id', Auth::id())
+            ->where('user_id', $toUserId)
+            ->where('request_to_user_id', $fromUserId)
             ->delete();
 
         ActivityLog::where('group_id', $group->id)
             ->where('type', 'settlement_request')
-            ->where('user_id', Auth::id())
-            ->where('request_to_user_id', $request->to_user_id)
+            ->where('user_id', $fromUserId)
+            ->where('request_to_user_id', $toUserId)
             ->delete();
 
         ActivityLog::create([
             'group_id' => $group->id,
             'user_id'  => Auth::id(),
-            'message'  => Auth::user()->name . ' paid ' . $toUser->name . ' ' . $group->currency . ' ' . number_format($request->amount, 2),
+            'message'  => $fromUser->name . ' paid ' . $toUser->name . ' ' . $group->currency . ' ' . number_format($request->amount, 2),
             'type'     => 'settle',
         ]);
 
@@ -275,10 +294,14 @@ class GroupController extends Controller
     // requestSettle — send a settlement request alert to another group member
     public function requestSettle(Request $request, Group $group)
     {
-        $request->validate([
-            'to_user_id' => 'required|exists:users,id',
-            'amount'     => 'required|numeric|min:0.01',
-        ]);
+        try {
+            $request->validate([
+                'to_user_id' => 'required|exists:users,id',
+                'amount'     => 'required|numeric|min:0.01',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput()->with('modal', 'settle');
+        }
 
         $toUser = User::findOrFail($request->to_user_id);
 

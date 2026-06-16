@@ -135,8 +135,8 @@
             <div @click="profileOpen = true" 
                  class="w-full flex items-center justify-between p-3.5 bg-white border border-[#1A103C]/10 rounded-2xl shadow-md cursor-pointer hover:bg-slate-50 transition transform active:scale-99">
                 <div class="flex items-center gap-3">
-                    @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                        <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
+                    @if(Auth::user()->profile_photo_path)
+                        <img src="{{ Auth::user()->profile_photo_url }}" class="h-9 w-9 rounded-full object-cover border border-[#6C3AF4]/10 shadow">
                     @else
                         <div class="h-9 w-9 rounded-full bg-gradient-to-tr from-[#6C3AF4] to-[#B026F3] flex items-center justify-center text-white font-bold text-sm shadow">
                             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
@@ -193,8 +193,8 @@
                               <img :src="avatarPreview" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/15 shadow-md">
                           </template>
                           <template x-if="!avatarPreview">
-                              @if(Auth::user()->profile_photo_path && File::exists(public_path(Auth::user()->profile_photo_path)))
-                                  <img src="{{ asset(Auth::user()->profile_photo_path) }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
+                              @if(Auth::user()->profile_photo_path)
+                                  <img src="{{ Auth::user()->profile_photo_url }}" class="h-20 w-20 rounded-full object-cover border-2 border-[#6C3AF4]/10 shadow-md">
                               @else
                                   <div class="h-20 w-20 rounded-full bg-gradient-to-tr from-[#6C3AF4] to-[#B026F3] flex items-center justify-center text-white font-black text-2xl shadow-md border-2 border-white">
                                       {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
@@ -520,8 +520,8 @@
                                         <!-- User avatar + detail -->
                                         <td class="py-3.5 pl-2">
                                             <div class="flex items-center gap-3">
-                                                @if($u->profile_photo_path && File::exists(public_path($u->profile_photo_path)))
-                                                    <img src="{{ asset($u->profile_photo_path) }}" class="h-9 w-9 rounded-full object-cover border border-slate-100 shadow-sm">
+                                                @if($u->profile_photo_path)
+                                                    <img src="{{ $u->profile_photo_url }}" class="h-9 w-9 rounded-full object-cover border border-slate-100 shadow-sm">
                                                 @else
                                                     <div class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-[#6C3AF4] uppercase text-[11px]">
                                                         {{ strtoupper(substr($u->name, 0, 1)) }}
